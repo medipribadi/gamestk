@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Bubble Shooter Dor Dor Dor</title>
+<title>Bubble Shooter TK</title>
 
 <style>
 
-body{
+*{
   margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
   overflow:hidden;
   font-family:Arial,sans-serif;
   background:#87CEEB;
@@ -19,74 +24,108 @@ canvas{
   display:block;
 }
 
-.ui{
-  position:absolute;
-  top:15px;
-  left:15px;
-  z-index:10;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.box{
-  background:white;
-  padding:10px 16px;
-  border-radius:15px;
-  font-weight:bold;
-  box-shadow:0 5px 15px rgba(0,0,0,0.2);
-}
+/* UI */
 
 .title{
   position:absolute;
-  top:15px;
+  top:20px;
   width:100%;
   text-align:center;
-  font-size:34px;
+
+  font-size:52px;
   font-weight:bold;
+
   color:white;
-  text-shadow:2px 2px 5px rgba(0,0,0,0.3);
-  z-index:10;
+
+  text-shadow:
+    0 4px 10px rgba(0,0,0,0.3);
+
+  z-index:20;
 }
 
-.combo{
+.left-ui{
   position:absolute;
-  top:80px;
-  width:100%;
-  text-align:center;
-  font-size:34px;
+  top:15px;
+  left:15px;
+
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  z-index:20;
+}
+
+.ui-box{
+  background:white;
+
+  padding:12px 18px;
+
+  border-radius:20px;
+
+  font-size:20px;
   font-weight:bold;
-  color:white;
-  text-shadow:3px 3px 8px rgba(0,0,0,0.5);
-  z-index:10;
+
+  box-shadow:
+    0 5px 15px rgba(0,0,0,0.2);
 }
 
 .leaderboard{
   position:absolute;
+
   top:15px;
   right:15px;
-  z-index:10;
+
+  width:240px;
+
   background:white;
-  padding:15px;
-  border-radius:20px;
-  width:220px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+
+  padding:18px;
+
+  border-radius:25px;
+
+  box-shadow:
+    0 5px 15px rgba(0,0,0,0.2);
+
+  z-index:20;
 }
 
 .leaderboard h3{
-  margin-top:0;
+  margin-bottom:12px;
   color:#ff4081;
 }
 
-.popup{
+.combo{
+  position:absolute;
 
+  top:110px;
+  width:100%;
+
+  text-align:center;
+
+  font-size:42px;
+  font-weight:bold;
+
+  color:white;
+
+  text-shadow:
+    0 4px 12px rgba(0,0,0,0.5);
+
+  z-index:30;
+
+  pointer-events:none;
+}
+
+/* popup */
+
+.popup{
   position:absolute;
   inset:0;
-  background:rgba(0,0,0,0.5);
+
+  background:rgba(0,0,0,0.45);
 
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
 
   z-index:100;
 }
@@ -94,33 +133,56 @@ canvas{
 .popup-box{
 
   background:white;
-  padding:30px;
-  border-radius:25px;
+
+  padding:35px;
+
+  border-radius:30px;
+
   text-align:center;
-  width:300px;
+
+  width:320px;
 }
 
-.popup input{
+.popup-box h2{
+  margin-bottom:20px;
+}
+
+.popup-box input{
 
   width:220px;
+
   padding:12px;
-  border-radius:12px;
+
+  border-radius:14px;
+
   border:2px solid #ddd;
-  margin-top:15px;
+
   font-size:18px;
+
+  margin-top:10px;
 }
 
-.popup button{
+.popup-box button{
 
-  margin-top:15px;
-  padding:12px 20px;
+  margin-top:20px;
+
+  padding:14px 25px;
+
   border:none;
+
+  border-radius:18px;
+
   background:#ff9800;
+
   color:white;
-  border-radius:15px;
+
   font-size:18px;
+  font-weight:bold;
+
   cursor:pointer;
 }
+
+/* tombol akhir */
 
 .end-buttons{
 
@@ -128,8 +190,10 @@ canvas{
   inset:0;
 
   display:none;
-  align-items:center;
+
   justify-content:center;
+  align-items:center;
+
   gap:20px;
 
   z-index:200;
@@ -137,31 +201,47 @@ canvas{
 
 .end-buttons button{
 
-  padding:15px 25px;
+  padding:16px 28px;
+
   border:none;
-  border-radius:20px;
+
+  border-radius:22px;
+
+  background:white;
 
   font-size:22px;
   font-weight:bold;
 
   cursor:pointer;
 
-  background:white;
-
-  box-shadow:0 5px 15px rgba(0,0,0,0.3);
-
-  transition:0.2s;
+  box-shadow:
+    0 5px 15px rgba(0,0,0,0.3);
 }
 
-.end-buttons button:hover{
+/* camera */
 
-  transform:scale(1.1);
+#input_video{
+
+  position:absolute;
+
+  right:20px;
+  bottom:20px;
+
+  width:230px;
+
+  border-radius:25px;
+
+  border:5px solid white;
+
+  z-index:50;
 }
 
 </style>
 </head>
 
 <body>
+
+<!-- popup -->
 
 <div class="popup" id="startPopup">
 
@@ -172,10 +252,12 @@ canvas{
     <p>Masukkan Nama Kamu 😊</p>
 
     <input
-      type="text"
       id="playerName"
+      type="text"
       placeholder="Nama pemain"
     >
+
+    <br>
 
     <button onclick="startGame()">
       ▶ Mulai Bermain
@@ -185,19 +267,29 @@ canvas{
 
 </div>
 
-<div class="ui">
+<!-- title -->
 
-  <div class="box">
+<div class="title">
+🫧🔫 Bubble Shooter 🔫🫧
+</div>
+
+<!-- kiri -->
+
+<div class="left-ui">
+
+  <div class="ui-box">
     ⭐ Score:
     <span id="score">0</span>/100
   </div>
 
-  <div class="box">
+  <div class="ui-box">
     ⏱ Waktu:
     <span id="timer">00:00</span>
   </div>
 
 </div>
+
+<!-- leaderboard -->
 
 <div class="leaderboard">
 
@@ -209,12 +301,18 @@ canvas{
 
 </div>
 
-<div class="title">
-🔫 Bubble Shooter 🔫
+<!-- combo -->
+
+<div
+  class="combo"
+  id="comboText">
 </div>
 
-<div class="combo" id="comboText"></div>
-<div id="endButtons" class="end-buttons">
+<!-- tombol akhir -->
+
+<div
+  id="endButtons"
+  class="end-buttons">
 
   <button onclick="restartGame()">
     🔄 Main Lagi
@@ -225,33 +323,20 @@ canvas{
   </button>
 
 </div>
+
+<!-- kamera -->
+
 <video
   id="input_video"
   autoplay
-  playsinline
-  style="
-    position:absolute;
-    bottom:20px;
-    right:20px;
-    width:220px;
-    border-radius:20px;
-    border:4px solid white;
-    z-index:50;
-  ">
+  playsinline>
 </video>
+
+<!-- canvas -->
+
 <canvas id="game"></canvas>
 
 <script>
-
-  function restartGame(){
-
-  location.reload();
-}
-
-function goMenu(){
-
-  window.location.href = "index.html";
-}
 
 const canvas =
   document.getElementById("game");
@@ -259,81 +344,121 @@ const canvas =
 const ctx =
   canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width =
+  window.innerWidth;
 
-const radius = 24;
+canvas.height =
+  window.innerHeight;
+
+/* CONFIG */
+
+const radius = 26;
 
 const colors = [
-  "#ff4d6d",
-  "#4dabf7",
-  "#51cf66",
-  "#ffd43b"
+
+  "#ff5c8a",
+  "#5db7ff",
+  "#ffd84d",
+  "#5edc78"
 ];
 
-let score = 0;
-let comboCount = 0;
+const WIN_SCORE = 100;
+
+/* GAME */
+
+let playerName = "";
 
 let gameStarted = false;
 let gameOver = false;
 let win = false;
 
-let playerName = "";
-
+let score = 0;
 let seconds = 0;
 
-const WIN_SCORE = 100;
+let bullet = null;
+
+/* BUBBLES */
 
 const bubbles = [];
 
 const cols = 8;
-const spacing = 55;
+
+const spacingX = 58;
+const spacingY = 50;
 
 const startX =
-  (canvas.width - ((cols-1)*spacing))/2;
+  (canvas.width -
+  ((cols-1)*spacingX))/2;
+
+/* shooter */
+
+const shooter = {
+
+  x: canvas.width/2,
+  y: canvas.height-90,
+
+  angle: -Math.PI/2,
+
+  bubble: randomColor()
+};
+
+/* RANDOM */
 
 function randomColor(){
 
   return colors[
-    Math.floor(Math.random()*colors.length)
+    Math.floor(
+      Math.random()*colors.length
+    )
   ];
 }
 
-for(let row=0; row<4; row++){
+/* GENERATE */
 
-  for(let col=0; col<cols; col++){
+function generateStartBubbles(){
 
-    bubbles.push({
+  bubbles.length = 0;
 
-      x: startX + col*spacing,
-      y: 80 + row*50,
-      color: randomColor()
-    });
+  for(let row=0; row<5; row++){
+
+    for(let col=0; col<cols; col++){
+
+      bubbles.push({
+
+        x:
+          startX +
+          col*spacingX,
+
+        y:
+          120 +
+          row*spacingY,
+
+        color:
+          randomColor()
+      });
+    }
   }
 }
 
-let shooter = {
+generateStartBubbles();
 
-  x: canvas.width/2,
-  y: canvas.height-90,
-  angle: 0,
-  bubble: randomColor()
-};
-
-let bullet = null;
+/* START */
 
 function startGame(){
 
   const input =
-    document.getElementById("playerName");
+    document.getElementById(
+      "playerName"
+    );
 
   if(input.value.trim() == ""){
 
-    alert("Masukkan nama dulu 😊");
+    alert("Isi nama dulu 😊");
     return;
   }
 
-  playerName = input.value;
+  playerName =
+    input.value;
 
   document.getElementById(
     "startPopup"
@@ -342,36 +467,148 @@ function startGame(){
   gameStarted = true;
 }
 
+/* TIMER */
+
 setInterval(()=>{
 
-  if(gameStarted && !gameOver && !win){
+  if(
+    gameStarted &&
+    !gameOver &&
+    !win
+  ){
 
     seconds++;
 
     const min =
-      String(Math.floor(seconds/60))
-      .padStart(2,"0");
+      String(
+        Math.floor(seconds/60)
+      ).padStart(2,"0");
 
     const sec =
-      String(seconds%60)
-      .padStart(2,"0");
+      String(
+        seconds%60
+      ).padStart(2,"0");
 
     document.getElementById(
       "timer"
-    ).innerText = `${min}:${sec}`;
+    ).innerText =
+      `${min}:${sec}`;
   }
 
 },1000);
 
-canvas.addEventListener("mousemove",(e)=>{
+/* LEADERBOARD */
 
-  const dx = e.clientX - shooter.x;
-  const dy = e.clientY - shooter.y;
+function saveLeaderboard(){
 
-  shooter.angle = Math.atan2(dy,dx);
-});
+  const data =
+    JSON.parse(
+      localStorage.getItem(
+        "bubbleLeaderboard"
+      )
+    ) || [];
 
-canvas.addEventListener("click",()=>{
+  data.push({
+
+    name:playerName,
+    time:seconds
+  });
+
+  data.sort((a,b)=>
+    a.time - b.time
+  );
+
+  data.splice(3);
+
+  localStorage.setItem(
+
+    "bubbleLeaderboard",
+
+    JSON.stringify(data)
+  );
+
+  renderLeaderboard();
+}
+
+function renderLeaderboard(){
+
+  const data =
+    JSON.parse(
+      localStorage.getItem(
+        "bubbleLeaderboard"
+      )
+    ) || [];
+
+  const el =
+    document.getElementById(
+      "leaderboardList"
+    );
+
+  if(data.length == 0){
+
+    el.innerHTML =
+      "Belum ada data";
+
+    return;
+  }
+
+  el.innerHTML = "";
+
+  data.forEach((p,i)=>{
+
+    const min =
+      String(
+        Math.floor(p.time/60)
+      ).padStart(2,"0");
+
+    const sec =
+      String(
+        p.time%60
+      ).padStart(2,"0");
+
+    el.innerHTML += `
+      <p>
+        ${i+1}. ${p.name}
+        - ${min}:${sec}
+      </p>
+    `;
+  });
+}
+
+renderLeaderboard();
+
+/* AIM MOUSE */
+
+canvas.addEventListener(
+
+  "mousemove",
+
+  (e)=>{
+
+    const dx =
+      e.clientX - shooter.x;
+
+    const dy =
+      e.clientY - shooter.y;
+
+    shooter.angle =
+      Math.atan2(dy,dx);
+  }
+);
+
+/* SHOOT */
+
+canvas.addEventListener(
+
+  "click",
+
+  ()=>{
+
+    shootBubble();
+  }
+);
+
+function shootBubble(){
 
   if(
     !gameStarted ||
@@ -385,44 +622,83 @@ canvas.addEventListener("click",()=>{
 
       x: shooter.x,
       y: shooter.y,
-      color: shooter.bubble,
 
-      dx: Math.cos(shooter.angle)*13,
-      dy: Math.sin(shooter.angle)*13  
+      color:
+        shooter.bubble,
+
+      dx:
+        Math.cos(
+          shooter.angle
+        ) * 13,
+
+      dy:
+        Math.sin(
+          shooter.angle
+        ) * 13
     };
 
-    shooter.bubble = randomColor();
+    shooter.bubble =
+      randomColor();
   }
-});
+}
+
+/* DRAW BG */
 
 function drawBackground(){
 
-  const bg = ctx.createLinearGradient(
-    0,0,0,canvas.height
+  const bg =
+    ctx.createLinearGradient(
+      0,0,
+      0,canvas.height
+    );
+
+  bg.addColorStop(
+    0,
+    "#87CEEB"
   );
 
-  bg.addColorStop(0,"#87CEEB");
-  bg.addColorStop(1,"#FFE8B5");
+  bg.addColorStop(
+    1,
+    "#FFE7B0"
+  );
 
   ctx.fillStyle = bg;
 
   ctx.fillRect(
+
     0,
     0,
+
     canvas.width,
     canvas.height
   );
 }
 
+/* DRAW BUBBLE */
+
 function drawBubble(x,y,color){
 
-  const glow = ctx.createRadialGradient(
-    x-8,y-8,5,
-    x,y,30
+  const g =
+    ctx.createRadialGradient(
+
+      x-8,
+      y-8,
+      5,
+
+      x,
+      y,
+      radius
+    );
+
+  g.addColorStop(
+    0,
+    "white"
   );
 
-  glow.addColorStop(0,"white");
-  glow.addColorStop(1,color);
+  g.addColorStop(
+    1,
+    color
+  );
 
   ctx.beginPath();
 
@@ -434,13 +710,18 @@ function drawBubble(x,y,color){
     Math.PI*2
   );
 
-  ctx.fillStyle = glow;
+  ctx.fillStyle = color;
   ctx.fill();
 
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 3;
+  ctx.strokeStyle =
+    "white";
+
+  ctx.lineWidth = 4;
+
   ctx.stroke();
 }
+
+/* AIM */
 
 function drawAimLine(){
 
@@ -451,16 +732,22 @@ function drawAimLine(){
     shooter.y
   );
 
-  const lineX =
-    shooter.x + Math.cos(shooter.angle)*180;
+  const lx =
+    shooter.x +
+    Math.cos(
+      shooter.angle
+    ) * 180;
 
-  const lineY =
-    shooter.y + Math.sin(shooter.angle)*180;
+  const ly =
+    shooter.y +
+    Math.sin(
+      shooter.angle
+    ) * 180;
 
-  ctx.lineTo(lineX,lineY);
+  ctx.lineTo(lx,ly);
 
   ctx.strokeStyle =
-    "rgba(255,255,255,0.7)";
+    "rgba(255,255,255,0.8)";
 
   ctx.lineWidth = 4;
 
@@ -470,6 +757,64 @@ function drawAimLine(){
 
   ctx.setLineDash([]);
 }
+
+/* SHOOTER */
+
+function drawShooter(){
+
+  ctx.save();
+
+  ctx.translate(
+    shooter.x,
+    shooter.y
+  );
+
+  ctx.rotate(
+    shooter.angle
+  );
+
+  ctx.fillStyle =
+    "white";
+
+  ctx.beginPath();
+
+  ctx.roundRect(
+    0,
+    -8,
+    85,
+    16,
+    10
+  );
+
+  ctx.fill();
+
+  ctx.beginPath();
+
+  ctx.arc(
+    88,
+    0,
+    10,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle =
+    "#ff9800";
+
+  ctx.fill();
+
+  ctx.restore();
+
+  drawBubble(
+
+    shooter.x,
+    shooter.y,
+
+    shooter.bubble
+  );
+}
+
+/* NEIGHBORS */
 
 function getNeighbors(target){
 
@@ -487,23 +832,26 @@ function getNeighbors(target){
     const dist =
       Math.sqrt(dx*dx + dy*dy);
 
-    // toleransi lebih besar
-
     return dist <= radius*2.6;
   });
 }
 
+/* MATCH */
+
 function findMatches(startBubble){
 
   const stack = [startBubble];
+
   const visited = [];
 
   while(stack.length){
 
-    const current = stack.pop();
+    const current =
+      stack.pop();
 
-    if(visited.includes(current))
-      continue;
+    if(
+      visited.includes(current)
+    ) continue;
 
     visited.push(current);
 
@@ -513,7 +861,10 @@ function findMatches(startBubble){
     neighbors.forEach(n=>{
 
       if(
-        n.color === startBubble.color &&
+
+        n.color ===
+        startBubble.color &&
+
         !visited.includes(n)
       ){
 
@@ -525,80 +876,80 @@ function findMatches(startBubble){
   return visited;
 }
 
+/* FLOATING */
+
 function removeFloatingBubbles(){
 
   const connected = [];
 
   function dfs(bubble){
 
-    if(connected.includes(bubble))
-      return;
+    if(
+      connected.includes(bubble)
+    ) return;
 
     connected.push(bubble);
 
-    const neighbors =
-      getNeighbors(bubble);
-
-    neighbors.forEach(n=>{
-
-      dfs(n);
-    });
+    getNeighbors(bubble)
+    .forEach(n=>dfs(n));
   }
 
   bubbles.forEach(b=>{
 
-    if(b.y <= 100){
+    if(b.y <= 130){
 
       dfs(b);
     }
   });
 
-  let floatingCount = 0;
+  for(
+    let i=bubbles.length-1;
+    i>=0;
+    i--
+  ){
 
-  for(let i=bubbles.length-1;i>=0;i--){
-
-    if(!connected.includes(bubbles[i])){
+    if(
+      !connected.includes(
+        bubbles[i]
+      )
+    ){
 
       bubbles.splice(i,1);
-
-      floatingCount++;
     }
   }
+}
 
-  if(floatingCount >= 2){
+/* COMBO */
 
-    comboCount++;
+function showCombo(count){
 
-    let comboText = "";
+  let text = "";
 
-    if(comboCount == 1){
+  if(count >= 4 &&
+     count <= 5){
 
-      comboText =
-        "🔥 COMBO x2 🔥";
-    }
-    else if(comboCount == 2){
+    text =
+      "🔥 COMBO x2 🔥";
+  }
 
-      comboText =
-        "🚀 COMBO x3 🚀";
-    }
-    else{
+  else if(count >= 6 &&
+          count <= 7){
 
-      comboText =
-        "💥 ULTRA COMBO 💥";
-    }
+    text =
+      "🚀 COMBO x3 🚀";
+  }
+
+  else if(count >= 8){
+
+    text =
+      "💥 ULTRA COMBO 💥";
+  }
+
+  if(text != ""){
 
     document.getElementById(
       "comboText"
-    ).innerText = comboText;
-
-    score += floatingCount * 5;
-
-    if(score > 100)
-      score = 100;
-
-    document.getElementById(
-      "score"
-    ).innerText = score;
+    ).innerText = text;
 
     setTimeout(()=>{
 
@@ -607,86 +958,10 @@ function removeFloatingBubbles(){
       ).innerText = "";
 
     },1500);
-
-  }else{
-
-    comboCount = 0;
   }
 }
 
-function saveLeaderboard(){
-
-  const leaderboard =
-    JSON.parse(
-      localStorage.getItem(
-        "bubbleLeaderboard"
-      )
-    ) || [];
-
-  leaderboard.push({
-
-    name: playerName,
-    time: seconds
-  });
-
-  leaderboard.sort((a,b)=>
-    a.time - b.time
-  );
-
-  leaderboard.splice(3);
-
-  localStorage.setItem(
-    "bubbleLeaderboard",
-    JSON.stringify(leaderboard)
-  );
-
-  renderLeaderboard();
-}
-
-function renderLeaderboard(){
-
-  const leaderboard =
-    JSON.parse(
-      localStorage.getItem(
-        "bubbleLeaderboard"
-      )
-    ) || [];
-
-  const el =
-    document.getElementById(
-      "leaderboardList"
-    );
-
-  if(leaderboard.length == 0){
-
-    el.innerHTML =
-      "Belum ada data";
-
-    return;
-  }
-
-  el.innerHTML = "";
-
-  leaderboard.forEach((p,i)=>{
-
-    const min =
-      String(Math.floor(p.time/60))
-      .padStart(2,"0");
-
-    const sec =
-      String(p.time%60)
-      .padStart(2,"0");
-
-    el.innerHTML += `
-      <p>
-        ${i+1}. ${p.name}
-        - ${min}:${sec}
-      </p>
-    `;
-  });
-}
-
-renderLeaderboard();
+/* NEW ROW */
 
 setInterval(()=>{
 
@@ -698,25 +973,36 @@ setInterval(()=>{
 
     bubbles.forEach(b=>{
 
-      b.y += 50;
+      b.y += 45;
     });
 
-    for(let col=0; col<cols; col++){
+    for(let col=0;
+        col<cols;
+        col++){
 
       bubbles.push({
 
-        x: startX + col*spacing,
-        y: 60,
-        color: randomColor()
+        x:
+          startX +
+          col*spacingX,
+
+        y:100,
+
+        color:
+          randomColor()
       });
     }
   }
 
 },30000);
 
+/* UPDATE */
+
 function update(){
 
   drawBackground();
+
+  /* garis kalah */
 
   ctx.beginPath();
 
@@ -730,9 +1016,14 @@ function update(){
     canvas.height-180
   );
 
-  ctx.strokeStyle = "red";
+  ctx.strokeStyle =
+    "red";
+
   ctx.lineWidth = 5;
+
   ctx.stroke();
+
+  /* bubble */
 
   bubbles.forEach(b=>{
 
@@ -751,111 +1042,99 @@ function update(){
     }
   });
 
+  /* aim */
+
   drawAimLine();
 
-  ctx.save();
+  /* shooter */
 
-  ctx.translate(
-    shooter.x,
-    shooter.y
-  );
+  drawShooter();
 
-  ctx.rotate(shooter.angle);
-
-  ctx.fillStyle = "white";
-
-  ctx.fillStyle = "#ffffff";
-
-ctx.beginPath();
-
-ctx.roundRect(
-  0,
-  -8,
-  80,
-  16,
-  10
-);
-
-ctx.fill();
-
-// ujung cannon
-
-ctx.beginPath();
-
-ctx.arc(
-  82,
-  0,
-  10,
-  0,
-  Math.PI*2
-);
-
-ctx.fillStyle = "#ff9800";
-ctx.fill();
-
-  ctx.restore();
-
-  drawBubble(
-    shooter.x,
-    shooter.y,
-    shooter.bubble
-  );
+  /* bullet */
 
   if(bullet){
 
     bullet.x += bullet.dx;
     bullet.y += bullet.dy;
 
+    /* bounce */
+
     if(
-      bullet.x < radius ||
-      bullet.x > canvas.width-radius
+
+      bullet.x <
+      radius ||
+
+      bullet.x >
+      canvas.width-radius
     ){
 
       bullet.dx *= -1;
     }
 
     drawBubble(
+
       bullet.x,
       bullet.y,
+
       bullet.color
     );
 
-    for(let i=0;i<bubbles.length;i++){
+    /* collision */
 
-      const b = bubbles[i];
+    for(let i=0;
+        i<bubbles.length;
+        i++){
 
-      const dist = Math.hypot(
+      const b =
+        bubbles[i];
 
-        bullet.x - b.x,
-        bullet.y - b.y
-      );
+      const dist =
+        Math.hypot(
 
-      if(dist < radius*2.3){
+          bullet.x - b.x,
+          bullet.y - b.y
+        );
+
+      if(
+        dist <
+        radius*2.2
+      ){
 
         const angle =
-  Math.atan2(
-    bullet.y - b.y,
-    bullet.x - b.x
-  );
+          Math.atan2(
 
-const snapX =
-  b.x + Math.cos(angle)*(radius*1.9);
+            bullet.y - b.y,
+            bullet.x - b.x
+          );
 
-const snapY =
-  b.y + Math.sin(angle)*(radius*1.9);
+        const snapX =
+          b.x +
+          Math.cos(angle)
+          * (radius*1.9);
 
-bubbles.push({
+        const snapY =
+          b.y +
+          Math.sin(angle)
+          * (radius*1.9);
 
-  x: snapX,
-  y: snapY,
-  color: bullet.color
-});
+        bubbles.push({
+
+          x:snapX,
+          y:snapY,
+
+          color:
+            bullet.color
+        });
 
         const newBubble =
-          bubbles[bubbles.length-1];
+          bubbles[
+            bubbles.length-1
+          ];
 
         const matches =
-          findMatches(newBubble);
+          findMatches(
+            newBubble
+          );
 
         if(matches.length >= 3){
 
@@ -866,86 +1145,66 @@ bubbles.push({
 
             if(index !== -1){
 
-              bubbles.splice(index,1);
+              bubbles.splice(
+                index,
+                1
+              );
             }
           });
 
           removeFloatingBubbles();
 
-const explodedCount =
-  matches.length;
+          showCombo(
+            matches.length
+          );
 
-let comboText = "";
-let points = 10;
+          let points = 10;
 
-// combo logic
+          if(matches.length >= 4 &&
+             matches.length <=5){
 
-if(explodedCount >= 4 &&
-   explodedCount <= 5){
+            points = 20;
+          }
 
-  comboText =
-    "🔥 COMBO x2 🔥";
+          else if(matches.length >=6 &&
+                  matches.length <=7){
 
-  points = 20;
-}
+            points = 30;
+          }
 
-else if(explodedCount >= 6 &&
-        explodedCount <= 7){
+          else if(matches.length >=8){
 
-  comboText =
-    "🚀 COMBO x3 🚀";
+            points = 50;
+          }
 
-  points = 30;
-}
+          score += points;
 
-else if(explodedCount >= 8){
+          if(score > 100)
+            score = 100;
 
-  comboText =
-    "💥 ULTRA COMBO 💥";
+          document.getElementById(
+            "score"
+          ).innerText = score;
 
-  points = 50;
-}
-
-// tampilkan combo
-
-if(comboText != ""){
-
-  document.getElementById(
-    "comboText"
-  ).innerText = comboText;
-
-  setTimeout(()=>{
-
-    document.getElementById(
-      "comboText"
-    ).innerText = "";
-
-  },1500);
-}
-
-// tambah score
-
-score += points;
-
-if(score > 100)
-  score = 100;
-
-document.getElementById(
-  "score"
-).innerText = score;
-
-          if(score >= WIN_SCORE){
+          if(score >= 100){
 
             win = true;
 
             saveLeaderboard();
+
+            document.getElementById(
+              "endButtons"
+            ).style.display = "flex";
           }
         }
 
         bullet = null;
+
         break;
       }
     }
+
+    /* kena atas */
 
     if(
       bullet &&
@@ -954,93 +1213,149 @@ document.getElementById(
 
       bubbles.push({
 
-        x: bullet.x,
-        y: bullet.y,
-        color: bullet.color
+        x:bullet.x,
+        y:bullet.y,
+
+        color:
+          bullet.color
       });
 
       bullet = null;
     }
   }
 
+  /* menang */
+
   if(win){
 
     ctx.fillStyle =
-    "rgba(0,0,0,0.5)";
+      "rgba(0,0,0,0.5)";
 
-  ctx.fillRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
+    ctx.fillRect(
 
-  ctx.fillStyle = "white";
+      0,
+      0,
 
-  ctx.font =
-    "bold 60px Arial";
+      canvas.width,
+      canvas.height
+    );
 
-  ctx.textAlign = "center";
+    ctx.fillStyle =
+      "white";
 
-  ctx.fillText(
+    ctx.font =
+      "bold 60px Arial";
 
-    `🎉 ${playerName} MENANG 🎉`,
+    ctx.textAlign =
+      "center";
 
-    canvas.width/2,
-    canvas.height/2 - 50
-  );
+    ctx.fillText(
 
-  // tombol
+      `🎉 ${playerName} MENANG 🎉`,
 
-  document.getElementById(
-    "endButtons"
-  ).style.display = "flex";
-}
+      canvas.width/2,
+      canvas.height/2 - 80
+    );
+  }
+
+  /* kalah */
 
   if(gameOver){
 
-  ctx.fillStyle =
-    "rgba(0,0,0,0.5)";
+    ctx.fillStyle =
+      "rgba(0,0,0,0.5)";
 
-  ctx.fillRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
+    ctx.fillRect(
+
+      0,
+      0,
+
+      canvas.width,
+      canvas.height
+    );
+
+    ctx.fillStyle =
+      "white";
+
+    ctx.font =
+      "bold 60px Arial";
+
+    ctx.textAlign =
+      "center";
+
+    ctx.fillText(
+
+      "💀 GAME OVER 💀",
+
+      canvas.width/2,
+      canvas.height/2 - 80
+    );
+
+    document.getElementById(
+      "endButtons"
+    ).style.display = "flex";
+  }
+
+  requestAnimationFrame(
+    update
   );
-
-  ctx.fillStyle = "white";
-
-  ctx.font =
-    "bold 60px Arial";
-
-  ctx.textAlign = "center";
-
-  ctx.fillText(
-
-    "💀 GAME OVER 💀",
-
-    canvas.width/2,
-    canvas.height/2 - 50
-  );
-
-  // tombol
-
-  document.getElementById(
-    "endButtons"
-  ).style.display = "flex";
 }
 
-  requestAnimationFrame(update);
+update();
+
+/* BUTTONS */
+
+function restartGame(){
+
+  location.reload();
 }
+
+function goMenu(){
+
+  window.location.href =
+    "index.html";
+}
+
+/* RESIZE */
+
+window.addEventListener(
+
+  "resize",
+
+  ()=>{
+
+    canvas.width =
+      window.innerWidth;
+
+    canvas.height =
+      window.innerHeight;
+  }
+);
+
+</script>
+
+<!-- MEDIAPIPE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+<script>
+
+/* VIDEO */
+
 const videoElement =
   document.getElementById(
-    'input_video'
+    "input_video"
   );
+
+/* HANDS */
 
 const hands = new Hands({
 
-  locateFile: (file) => {
+  locateFile:(file)=>{
 
     return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
   }
@@ -1048,39 +1363,37 @@ const hands = new Hands({
 
 hands.setOptions({
 
-  maxNumHands: 1,
+  maxNumHands:1,
 
-  modelComplexity: 1,
+  modelComplexity:0,
 
-  minDetectionConfidence: 0.7,
+  minDetectionConfidence:0.7,
 
-  minTrackingConfidence: 0.7
+  minTrackingConfidence:0.7
 });
 
-// hasil tracking tangan
+/* TRACK */
 
 hands.onResults((results)=>{
 
-  if(results.multiHandLandmarks &&
-     results.multiHandLandmarks.length > 0){
+  if(
+    results.multiHandLandmarks &&
+    results.multiHandLandmarks.length > 0
+  ){
 
     const landmarks =
       results.multiHandLandmarks[0];
 
-    // ujung telunjuk
+    /* telunjuk */
 
     const finger =
       landmarks[8];
-
-    // convert ke posisi layar
 
     const handX =
       finger.x * canvas.width;
 
     const handY =
       finger.y * canvas.height;
-
-    // arah aim
 
     const dx =
       handX - shooter.x;
@@ -1090,37 +1403,49 @@ hands.onResults((results)=>{
 
     shooter.angle =
       Math.atan2(dy,dx);
+
+    /* pinch shoot */
+
+    const thumb =
+      landmarks[4];
+
+    const pinch =
+      Math.hypot(
+
+        finger.x - thumb.x,
+        finger.y - thumb.y
+      );
+
+    if(pinch < 0.05){
+
+      shootBubble();
+    }
   }
 });
 
-// aktifkan kamera
+/* CAMERA */
 
-const camera = new Camera(
-  videoElement,
-  {
+const camera =
+  new Camera(
+    videoElement,
+    {
 
-    onFrame: async ()=>{
+      onFrame: async ()=>{
 
-      await hands.send({
+        await hands.send({
 
-        image: videoElement
-      });
-    },
+          image: videoElement
+        });
+      },
 
-    width: 640,
-    height: 480
-  }
-);
+      width:320,
+      height:240
+    }
+  );
 
 camera.start();
-update();
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 
 </body>
 </html>
