@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bubble Shooter TK</title>
+
+<style>
+
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  background:#87CEEB;
+}
+
+canvas{
+  display:block;
+}
+
+.score{
+  position:absolute;
+  top:15px;
+  left:15px;
+  background:white;
+  padding:12px 18px;
+  border-radius:15px;
+  font-size:22px;
+  font-weight:bold;
+  color:#ff4081;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  z-index:10;
+}
+
+.title{
+  position:absolute;
+  top:15px;
+  width:100%;
+  text-align:center;
+  font-size:34px;
+  font-weight:bold;
+  color:white;
+  text-shadow:2px 2px 5px rgba(0,0,0,0.3);
+  z-index:10;
+}
+
+.combo{
+  position:absolute;
+  top:80px;
+  width:100%;
+  text-align:center;
+  font-size:34px;
+  font-weight:bold;
+  color:white;
+  text-shadow:3px 3px 8px rgba(0,0,0,0.5);
+  z-index:10;
+  animation:pulse 0.5s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.1);}
+  100%{transform:scale(1);}
+}
+
+.back-btn{
+  position:absolute;
+  top:15px;
+  right:15px;
+  background:#ff9800;
+  color:white;
+  text-decoration:none;
+  padding:10px 18px;
+  border-radius:15px;
+  font-weight:bold;
+  z-index:10;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="score">
+⭐ Score:
+<span id="score">0</span>/100
+</div>
+
+<div class="title">
+🔫 Bubble Shooter 🔫
+</div>
+
+<div class="combo" id="comboText"></div>
+
+<a href="index.html" class="back-btn">
+⬅ Kembali
+</a>
+
+<canvas id="game"></canvas>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const radius = 24;
+
+const colors = [
+  "#ff4d6d",
+  "#4dabf7",
+  "#51cf66",
+  "#ffd43b"
+];
+
+let score = 0;
+let comboCount = 0;
+
+let gameOver = false;
+let win = false;
+
+const WIN_SCORE = 100;
+
+const bubbles = [];
+
+const cols = 8;
+const spacing = 55;
+
+const startX =
+  (canvas.width - ((cols-1)*spacing))/2;
+
+function randomColor(){
+
+  return colors[
+    Math.floor(Math.random()*colors.length)
+  ];
+}
+
+// generate awal
+
+for(let row=0; row<4; row++){
+
+  for(let col=0; col<cols; col++){
+
+    bubbles.push({
+
+      x: startX + col*spacing,
+      y: 80 + row*50,
+      color: randomColor()
+    });
+  }
+}
+
+let shooter = {
+
+  x: canvas.width/2,
+  y: canvas.height-90,
+  angle: 0,
+  bubble: randomColor()
+};
+
+let bullet = null;
+
+// AIM
+
+canvas.addEventListener("mousemove",(e)=>{
+
+  const dx = e.clientX - shooter.x;
+  const dy = e.clientY - shooter.y;
+
+  shooter.angle = Math.atan2(dy,dx);
+});
+
+// SHOOT
+
+canvas.addEventListener("click",()=>{
+
+  if(gameOver || win) return;
+
+  if(!bullet){
+
+    bullet = {
+
+      x: shooter.x,
+      y: shooter.y,
+      color: shooter.bubble,
+
+      dx: Math.cos(shooter.angle)*11,
+      dy: Math.sin(shooter.angle)*11
+    };
+
+    shooter.bubble = randomColor();
+  }
+});
+
+function drawBackground(){
+
+  const bg = ctx.createLinearGradient(
+    0,0,0,canvas.height
+  );
+
+  bg.addColorStop(0,"#87CEEB");
+  bg.addColorStop(1,"#FFE8B5");
+
+  ctx.fillStyle = bg;
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+}
+
+function drawBubble(x,y,color){
+
+  const glow = ctx.createRadialGradient(
+    x-8,y-8,5,
+    x,y,30
+  );
+
+  glow.addColorStop(0,"white");
+  glow.addColorStop(1,color);
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y,
+    radius,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle = glow;
+  ctx.fill();
+
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+// AIM LINE
+
+function drawAimLine(){
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    shooter.x,
+    shooter.y
+  );
+
+  const lineX =
+    shooter.x + Math.cos(shooter.angle)*180;
+
+  const lineY =
+    shooter.y + Math.sin(shooter.angle)*180;
+
+  ctx.lineTo(lineX,lineY);
+
+  ctx.strokeStyle =
+    "rgba(255,255,255,0.7)";
+
+  ctx.lineWidth = 4;
+
+  ctx.setLineDash([10,10]);
+
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+}
+
+// neighbor dekat
+
+function getNeighbors(target){
+
+  return bubbles.filter(other=>{
+
+    if(other === target)
+      return false;
+
+    const dist = Math.hypot(
+
+      target.x - other.x,
+      target.y - other.y
+    );
+
+    return dist < radius*2.1;
+  });
+}
+
+// flood fill
+
+function findMatches(startBubble){
+
+  const stack = [startBubble];
+  const visited = [];
+
+  while(stack.length){
+
+    const current = stack.pop();
+
+    if(visited.includes(current))
+      continue;
+
+    visited.push(current);
+
+    const neighbors =
+      getNeighbors(current);
+
+    neighbors.forEach(n=>{
+
+      if(
+        n.color === startBubble.color &&
+        !visited.includes(n)
+      ){
+
+        stack.push(n);
+      }
+    });
+  }
+
+  return visited;
+}
+
+// bubble jatuh
+
+function removeFloatingBubbles(){
+
+  const connected = [];
+
+  function dfs(bubble){
+
+    if(connected.includes(bubble))
+      return;
+
+    connected.push(bubble);
+
+    const neighbors =
+      getNeighbors(bubble);
+
+    neighbors.forEach(n=>{
+
+      dfs(n);
+    });
+  }
+
+  // yg connect ke atas
+
+  bubbles.forEach(b=>{
+
+    if(b.y <= 100){
+
+      dfs(b);
+    }
+  });
+
+  let floatingCount = 0;
+
+  // yg tidak connect = jatuh
+
+  for(let i=bubbles.length-1;i>=0;i--){
+
+    if(!connected.includes(bubbles[i])){
+
+      bubbles.splice(i,1);
+
+      floatingCount++;
+    }
+  }
+
+  // combo
+
+  if(floatingCount >= 2){
+
+    comboCount++;
+
+    let comboText = "";
+
+    if(comboCount == 1){
+
+      comboText =
+        "🔥 COMBO x2 🔥";
+    }
+    else if(comboCount == 2){
+
+      comboText =
+        "🚀 COMBO x3 🚀";
+    }
+    else{
+
+      comboText =
+        "💥 ULTRA COMBO 💥";
+    }
+
+    document.getElementById(
+      "comboText"
+    ).innerText = comboText;
+
+    score += floatingCount * 5;
+
+    if(score > 100)
+      score = 100;
+
+    document.getElementById(
+      "score"
+    ).innerText = score;
+
+    setTimeout(()=>{
+
+      document.getElementById(
+        "comboText"
+      ).innerText = "";
+
+    },1500);
+
+  }else{
+
+    comboCount = 0;
+  }
+}
+
+// bubble turun tiap 30 detik
+
+setInterval(()=>{
+
+  if(gameOver || win) return;
+
+  bubbles.forEach(b=>{
+
+    b.y += 50;
+  });
+
+  // row baru
+
+  for(let col=0; col<cols; col++){
+
+    bubbles.push({
+
+      x: startX + col*spacing,
+      y: 60,
+      color: randomColor()
+    });
+  }
+
+},30000);
+
+function update(){
+
+  drawBackground();
+
+  // garis kalah
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    0,
+    canvas.height-180
+  );
+
+  ctx.lineTo(
+    canvas.width,
+    canvas.height-180
+  );
+
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 5;
+  ctx.stroke();
+
+  // bubble
+
+  bubbles.forEach(b=>{
+
+    drawBubble(
+      b.x,
+      b.y,
+      b.color
+    );
+
+    // kalah
+
+    if(
+      b.y + radius >
+      canvas.height-180
+    ){
+
+      gameOver = true;
+    }
+  });
+
+  // aim line
+
+  drawAimLine();
+
+  // shooter
+
+  ctx.save();
+
+  ctx.translate(
+    shooter.x,
+    shooter.y
+  );
+
+  ctx.rotate(shooter.angle);
+
+  ctx.fillStyle = "white";
+
+ ctx.fillStyle = "#ffffff";
+
+ctx.beginPath();
+
+ctx.roundRect(
+  0,
+  -8,
+  80,
+  16,
+  10
+);
+
+ctx.fill();
+
+// ujung cannon
+
+ctx.beginPath();
+
+ctx.arc(
+  82,
+  0,
+  10,
+  0,
+  Math.PI*2
+);
+
+ctx.fillStyle = "#ff9800";
+ctx.fill();
+
+  ctx.restore();
+
+  drawBubble(
+    shooter.x,
+    shooter.y,
+    shooter.bubble
+  );
+
+  // bullet
+
+  if(bullet){
+
+    bullet.x += bullet.dx;
+    bullet.y += bullet.dy;
+
+    // bouncing dinding
+
+    if(
+      bullet.x < radius ||
+      bullet.x > canvas.width-radius
+    ){
+
+      bullet.dx *= -1;
+    }
+
+    drawBubble(
+      bullet.x,
+      bullet.y,
+      bullet.color
+    );
+
+    // collision
+
+    for(let i=0;i<bubbles.length;i++){
+
+      const b = bubbles[i];
+
+      const dist = Math.hypot(
+
+        bullet.x - b.x,
+        bullet.y - b.y
+      );
+
+      if(dist < radius*2){
+
+        // tempel bubble
+
+        bubbles.push({
+
+          x: bullet.x,
+          y: bullet.y,
+          color: bullet.color
+        });
+
+        const newBubble =
+          bubbles[bubbles.length-1];
+
+        // cari match
+
+        const matches =
+          findMatches(newBubble);
+
+        // minimal 3 connect
+
+        if(matches.length >= 3){
+
+          matches.forEach(m=>{
+
+            const index =
+              bubbles.indexOf(m);
+
+            if(index !== -1){
+
+              bubbles.splice(index,1);
+            }
+          });
+
+          // bubble bawah jatuh
+
+          removeFloatingBubbles();
+
+          // score
+
+          score += 10;
+
+          if(score > 100)
+            score = 100;
+
+          document.getElementById(
+            "score"
+          ).innerText = score;
+
+          // menang
+
+          if(score >= WIN_SCORE){
+
+            win = true;
+          }
+        }
+
+        bullet = null;
+        break;
+      }
+    }
+
+    // kena atas
+
+    if(
+      bullet &&
+      bullet.y < radius
+    ){
+
+      bubbles.push({
+
+        x: bullet.x,
+        y: bullet.y,
+        color: bullet.color
+      });
+
+      bullet = null;
+    }
+  }
+
+  // menang
+
+  if(win){
+
+    ctx.fillStyle =
+      "rgba(0,0,0,0.5)";
+
+    ctx.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    ctx.fillStyle = "white";
+
+    ctx.font =
+      "bold 60px Arial";
+
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+
+      "🎉 KAMU MENANG 🎉",
+
+      canvas.width/2,
+      canvas.height/2
+    );
+  }
+
+  // kalah
+
+  if(gameOver){
+
+    ctx.fillStyle =
+      "rgba(0,0,0,0.5)";
+
+    ctx.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    ctx.fillStyle = "white";
+
+    ctx.font =
+      "bold 60px Arial";
+
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+
+      "💀 GAME OVER 💀",
+
+      canvas.width/2,
+      canvas.height/2
+    );
+  }
+
+  requestAnimationFrame(update);
+}
+
+update();
+
+window.addEventListener("resize",()=>{
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+</script>
+
+</body>
+</html>
