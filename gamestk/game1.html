@@ -236,6 +236,54 @@ canvas{
   z-index:50;
 }
 
+@media(max-width:768px){
+
+  .title{
+
+    font-size:32px;
+    top:15px;
+  }
+
+  .leaderboard{
+
+    width:160px;
+
+    padding:12px;
+
+    font-size:14px;
+  }
+
+  .leaderboard h3{
+
+    font-size:18px;
+  }
+
+  .ui-box{
+
+    font-size:16px;
+
+    padding:10px 14px;
+  }
+
+  .popup-box{
+
+    width:90%;
+  }
+
+  .popup-box input{
+
+    width:90%;
+  }
+
+  #input_video{
+
+    width:120px;
+
+    right:10px;
+    bottom:10px;
+  }
+}
+
 </style>
 </head>
 
@@ -352,7 +400,10 @@ canvas.height =
 
 /* CONFIG */
 
-const radius = 26;
+const radius =
+  window.innerWidth < 768
+  ? 18
+  : 26;
 
 const colors = [
 
@@ -725,33 +776,72 @@ function drawBubble(x,y,color){
 
 function drawAimLine(){
 
+  let startX = shooter.x;
+  let startY = shooter.y;
+
+  let angle = shooter.angle;
+
+  let dx = Math.cos(angle);
+  let dy = Math.sin(angle);
+
+  let x = startX;
+  let y = startY;
+
   ctx.beginPath();
 
-  ctx.moveTo(
-    shooter.x,
-    shooter.y
-  );
+  ctx.moveTo(x,y);
 
-  const lx =
-    shooter.x +
-    Math.cos(
-      shooter.angle
-    ) * 180;
+  for(let i=0; i<900; i++){
 
-  const ly =
-    shooter.y +
-    Math.sin(
-      shooter.angle
-    ) * 180;
+    x += dx * 6;
+    y += dy * 6;
 
-  ctx.lineTo(lx,ly);
+    // bounce kiri kanan
+
+    if(x <= radius){
+
+      x = radius;
+      dx *= -1;
+    }
+
+    if(x >= canvas.width-radius){
+
+      x = canvas.width-radius;
+      dx *= -1;
+    }
+
+    // berhenti kalau kena bubble
+
+    let hit = false;
+
+    for(let b of bubbles){
+
+      const dist = Math.hypot(
+        x - b.x,
+        y - b.y
+      );
+
+      if(dist < radius*2){
+
+        hit = true;
+        break;
+      }
+    }
+
+    ctx.lineTo(x,y);
+
+    if(hit || y < 0){
+
+      break;
+    }
+  }
 
   ctx.strokeStyle =
-    "rgba(255,255,255,0.8)";
+    "rgba(255,255,255,0.9)";
 
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 5;
 
-  ctx.setLineDash([5,8]);
+  ctx.setLineDash([10,10]);
 
   ctx.stroke();
 
@@ -1390,7 +1480,7 @@ hands.onResults((results)=>{
       landmarks[8];
 
     const handX =
-      finger.x * canvas.width;
+  (1 - finger.x) * canvas.width;
 
     const handY =
       finger.y * canvas.height;

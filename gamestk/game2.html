@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧐 Tebak Hebat! — Game Edukasi Anak TK</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family:'Nunito',sans-serif;
+  background:#0D0D2B;
+  min-height:100vh;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  overflow:hidden;
+}
+
+/* ── STARS BG ── */
+.stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.star-dot {
+  position:absolute; border-radius:50%;
+  background:white; animation:twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,100%{opacity:.2;transform:scale(1)}
+  50%{opacity:.9;transform:scale(1.4)}
+}
+
+/* ── WRAPPER ── */
+#app {
+  position:relative; z-index:1;
+  width:860px; max-width:98vw;
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+}
+
+/* ── TITLE BAR ── */
+#title-bar {
+  font-family:'Fredoka One',cursive;
+  font-size:30px; color:#FFD700;
+  text-shadow:0 0 20px rgba(255,215,0,.5), 2px 3px 0 rgba(0,0,0,.4);
+  letter-spacing:1px;
+}
+
+/* ── GAME CARD ── */
+#game-card {
+  width:100%; background:rgba(255,255,255,.04);
+  border:2px solid rgba(255,255,255,.12);
+  border-radius:28px; overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1);
+  backdrop-filter:blur(12px);
+}
+
+/* ── HUD ── */
+#hud {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 20px;
+  background:rgba(0,0,0,.3);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.hud-pill {
+  background:rgba(255,255,255,.1); border-radius:50px;
+  padding:5px 16px; font-family:'Fredoka One',cursive;
+  font-size:17px; color:white;
+  border:1px solid rgba(255,255,255,.15);
+}
+#lives-hud { color:#FF6B8A; }
+#score-hud { color:#FFD700; }
+#phase-hud { color:#7EFFF5; font-size:14px; }
+
+/* ── MAIN AREA ── */
+#main-area {
+  display:grid; grid-template-columns:1fr 320px;
+  gap:0; min-height:440px;
+}
+
+/* LEFT PANEL */
+#left-panel {
+  padding:24px 28px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px;
+  border-right:1px solid rgba(255,255,255,.08);
+}
+
+/* RIGHT PANEL — camera */
+#right-panel {
+  padding:16px;
+  display:flex; flex-direction:column;
+  align-items:center; gap:10px;
+  background:rgba(0,0,0,.2);
+}
+
+/* ── QUESTION DISPLAY ── */
+#question-box {
+  background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,100,150,.1));
+  border:2px solid rgba(255,215,0,.3);
+  border-radius:20px; padding:20px 30px;
+  text-align:center; width:100%;
+}
+#question-label {
+  font-size:13px; color:rgba(255,255,255,.5);
+  font-weight:800; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;
+}
+#question-text {
+  font-family:'Fredoka One',cursive;
+  font-size:52px; color:white;
+  text-shadow:0 0 30px rgba(255,215,0,.4);
+  line-height:1.1;
+}
+#question-sub {
+  font-size:14px; color:rgba(255,255,255,.55);
+  font-weight:800; margin-top:6px;
+}
+
+/* ── ANSWER AREA ── */
+#answer-area { width:100%; text-align:center; }
+
+/* Finger count display */
+#finger-display {
+  background:rgba(255,255,255,.06); border-radius:16px;
+  padding:14px; border:2px solid rgba(255,255,255,.1);
+}
+#finger-count-big {
+  font-family:'Fredoka One',cursive;
+  font-size:72px; color:#7EFFF5;
+  text-shadow:0 0 30px rgba(126,255,245,.5);
+  line-height:1;
+}
+#finger-label { font-size:13px; color:rgba(255,255,255,.5); font-weight:800; margin-top:4px; }
+
+/* Speech display */
+#speech-display {
+  background:rgba(255,255,255,.06); border-radius:16px;
+  padding:14px; border:2px dashed rgba(255,100,200,.3);
+}
+#speech-text {
+  font-family:'Fredoka One',cursive;
+  font-size:28px; color:#FFB3FF;
+  text-shadow:0 0 20px rgba(255,100,255,.4);
+  min-height:44px;
+}
+#speech-label { font-size:12px; color:rgba(255,255,255,.45); font-weight:800; margin-top:4px; }
+
+/* Mic button */
+#mic-btn {
+  width:72px; height:72px; border-radius:50%;
+  border:none; cursor:pointer;
+  font-size:32px;
+  background:linear-gradient(135deg,#FF6B8A,#FF3366);
+  box-shadow:0 6px 0 #aa2244, 0 0 30px rgba(255,100,150,.4);
+  transition:transform .1s, box-shadow .1s;
+  display:flex; align-items:center; justify-content:center;
+}
+#mic-btn:hover { transform:translateY(-3px); box-shadow:0 9px 0 #aa2244,0 0 40px rgba(255,100,150,.5); }
+#mic-btn:active, #mic-btn.listening {
+  transform:translateY(2px); box-shadow:0 2px 0 #aa2244;
+  animation:mic-pulse 0.6s ease-in-out infinite;
+}
+@keyframes mic-pulse {
+  0%,100%{box-shadow:0 2px 0 #aa2244, 0 0 20px rgba(255,100,150,.4)}
+  50%{box-shadow:0 2px 0 #aa2244, 0 0 50px rgba(255,100,150,.9)}
+}
+
+/* ── CAMERA ── */
+#cam-wrap {
+  position:relative; width:280px; height:210px;
+  border-radius:18px; overflow:hidden;
+  border:2px solid rgba(255,255,255,.15);
+  background:#000;
+  box-shadow:0 8px 30px rgba(0,0,0,.4);
+}
+#cam-video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+#cam-canvas { position:absolute; inset:0; width:100%; height:100%; transform:scaleX(-1); }
+#cam-label-tag {
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(0,0,0,.6); color:white;
+  font-size:11px; font-weight:800; text-align:center; padding:3px;
+}
+
+/* Finger indicator */
+#finger-indicator {
+  background:rgba(126,255,245,.1); border:2px solid rgba(126,255,245,.3);
+  border-radius:12px; padding:8px 14px;
+  font-family:'Fredoka One',cursive; font-size:14px;
+  color:#7EFFF5; text-align:center; width:280px;
+}
+
+/* ── FEEDBACK ── */
+#feedback-overlay {
+  position:absolute; inset:0; border-radius:26px;
+  display:none; align-items:center; justify-content:center;
+  flex-direction:column; gap:10px; z-index:50;
+  backdrop-filter:blur(4px);
+}
+#feedback-overlay.correct {
+  background:rgba(0,200,100,.15);
+  border:3px solid #00CC64;
+}
+#feedback-overlay.wrong {
+  background:rgba(255,50,50,.15);
+  border:3px solid #FF3333;
+}
+#feedback-emoji { font-size:90px; animation:pop-in .3s ease-out; }
+#feedback-msg {
+  font-family:'Fredoka One',cursive; font-size:36px; color:white;
+  text-shadow:0 3px 10px rgba(0,0,0,.4);
+}
+#feedback-sub { font-size:16px; color:rgba(255,255,255,.8); font-weight:800; }
+@keyframes pop-in {
+  0%{transform:scale(.4) rotate(-10deg);opacity:0}
+  70%{transform:scale(1.15) rotate(3deg)}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+
+/* ── IMAGE CARD (places/animals) ── */
+#image-card {
+  width:180px; height:140px; border-radius:16px;
+  overflow:hidden; border:3px solid rgba(255,255,255,.2);
+  box-shadow:0 8px 25px rgba(0,0,0,.4);
+  display:flex; align-items:center; justify-content:center;
+  font-size:90px; background:rgba(255,255,255,.05);
+  position:relative;
+}
+#image-card canvas { display:none; }
+
+/* ── OVERLAYS (start/gameover/win) ── */
+.full-overlay {
+  position:absolute; inset:0; border-radius:26px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  z-index:60; text-align:center; padding:28px;
+  backdrop-filter:blur(8px);
+}
+#start-screen {
+  background:linear-gradient(135deg,rgba(13,13,43,.97),rgba(30,10,60,.97));
+  border:2px solid rgba(255,215,0,.2);
+}
+#end-screen { display:none; background:rgba(5,5,20,.96); }
+
+.full-overlay h1 {
+  font-family:'Fredoka One',cursive; font-size:44px; color:white;
+  text-shadow:0 0 30px rgba(255,215,0,.4); margin-bottom:8px;
+}
+.full-overlay p { font-size:15px; color:rgba(255,255,255,.8); font-weight:800; line-height:1.7; }
+.phase-card {
+  background:rgba(255,255,255,.06); border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  padding:12px 20px; margin:8px 0; font-size:14px;
+  color:rgba(255,255,255,.85); font-weight:800; line-height:1.8;
+  text-align:left;
+}
+.phase-card b { color:#FFD700; }
+.btn-start {
+  margin-top:16px; padding:14px 42px; border-radius:50px;
+  font-family:'Fredoka One',cursive; font-size:22px; color:#0D0D2B;
+  background:linear-gradient(135deg,#FFD700,#FFA500);
+  border:none; cursor:pointer;
+  box-shadow:0 6px 0 #CC7700, 0 0 30px rgba(255,215,0,.3);
+  transition:transform .1s, box-shadow .1s;
+}
+.btn-start:hover { transform:translateY(-3px); box-shadow:0 9px 0 #CC7700; }
+.btn-start:active { transform:translateY(2px); box-shadow:0 2px 0 #CC7700; }
+#cam-status-txt { font-size:12px; color:rgba(255,255,255,.5); margin-top:8px; font-weight:800; }
+
+/* ── PROGRESS BAR ── */
+#progress-wrap {
+  width:100%; height:8px;
+  background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden;
+}
+#progress-bar {
+  height:100%; border-radius:4px;
+  background:linear-gradient(90deg,#FFD700,#FF6B8A);
+  transition:width .4s ease;
+}
+
+/* ── PHASE TITLE ── */
+#phase-title {
+  font-family:'Fredoka One',cursive; font-size:18px;
+  padding:6px 18px; border-radius:50px;
+  display:inline-block; margin-bottom:4px;
+}
+.phase-math { background:rgba(126,255,245,.15); color:#7EFFF5; border:1px solid rgba(126,255,245,.3); }
+.phase-places { background:rgba(255,215,0,.15); color:#FFD700; border:1px solid rgba(255,215,0,.3); }
+.phase-animals { background:rgba(255,150,100,.15); color:#FFAA80; border:1px solid rgba(255,150,100,.3); }
+
+/* ── COUNTDOWN ── */
+#countdown-wrap {
+  position:absolute; inset:0; border-radius:26px;
+  display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.7); z-index:55; backdrop-filter:blur(6px);
+}
+#countdown-num {
+  font-family:'Fredoka One',cursive; font-size:140px; color:#FFD700;
+  text-shadow:0 0 60px rgba(255,215,0,.8);
+  animation:cnt-pop .8s ease-in-out;
+}
+@keyframes cnt-pop {
+  0%{transform:scale(.3);opacity:0}
+  60%{transform:scale(1.2)}
+  100%{transform:scale(1);opacity:1}
+}
+
+/* ── OPTIONS (speech MCQ backup) ── */
+#options-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px; width:100%;
+}
+.opt-btn {
+  padding:10px 8px; border-radius:12px;
+  font-family:'Fredoka One',cursive; font-size:15px;
+  color:white; border:2px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08); cursor:pointer;
+  transition:all .15s;
+}
+.opt-btn:hover { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.4); transform:translateY(-2px); }
+.opt-btn.correct-opt { background:rgba(0,200,100,.3); border-color:#00CC64; }
+.opt-btn.wrong-opt   { background:rgba(255,50,50,.3);  border-color:#FF3333; }
+
+/* score final */
+#final-score-big {
+  font-family:'Fredoka One',cursive; font-size:64px; color:#FFD700;
+  text-shadow:0 0 40px rgba(255,215,0,.6); margin:12px 0;
+}
+#stars-row { font-size:40px; margin:8px 0; letter-spacing:6px; }
+</style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div class="stars" id="stars"></div>
+
+<div id="app">
+  <div id="title-bar">🧐 Tebak Hebat! — Belajar Sambil Bermain</div>
+
+  <div id="game-card" style="position:relative;">
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hud-pill" id="lives-hud">❤️❤️❤️</div>
+      <div class="hud-pill" id="phase-hud">📐 Fase 1: Berhitung</div>
+      <div class="hud-pill" id="score-hud">⭐ 0</div>
+    </div>
+
+    <!-- Progress -->
+    <div style="padding:0 20px;background:rgba(0,0,0,.2);">
+      <div id="progress-wrap"><div id="progress-bar" style="width:0%"></div></div>
+    </div>
+
+    <!-- Main -->
+    <div id="main-area">
+
+      <!-- LEFT -->
+      <div id="left-panel">
+        <div id="phase-title" class="phase-math">📐 Berhitung — Angkat Jari!</div>
+
+        <div id="question-box">
+          <div id="question-label">SOAL</div>
+          <div id="question-text">3 + 2 = ?</div>
+          <div id="question-sub">Angkat jari sebanyak jawaban yang benar!</div>
+        </div>
+
+        <!-- Image (for places/animals) -->
+        <div id="image-card" style="display:none;">🐘</div>
+
+        <!-- Answer display -->
+        <div id="answer-area">
+          <!-- Finger mode -->
+          <div id="finger-display">
+            <div id="finger-count-big">0</div>
+            <div id="finger-label">🖐️ Jari yang terdeteksi</div>
+          </div>
+          <!-- Speech mode -->
+          <div id="speech-display" style="display:none;">
+            <div id="speech-text">Tekan 🎤 lalu jawab!</div>
+            <div id="speech-label">🎙️ Jawaban kamu</div>
+          </div>
+
+          <!-- MCQ options (speech backup) -->
+          <div id="options-grid" style="display:none; margin-top:10px;"></div>
+
+          <!-- Mic button -->
+          <button id="mic-btn" style="display:none; margin:10px auto;" onclick="startListening()">🎤</button>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div id="right-panel">
+        <div style="font-family:'Fredoka One',cursive;font-size:13px;color:rgba(255,255,255,.5);letter-spacing:1px;">📷 KAMERA KAMU</div>
+        <div id="cam-wrap">
+          <video id="cam-video" autoplay muted playsinline></video>
+          <canvas id="cam-canvas"></canvas>
+          <div id="cam-label-tag">MediaPipe Hand Tracking</div>
+        </div>
+        <div id="finger-indicator">🖐️ Siap mendeteksi jari...</div>
+        <div style="text-align:center;">
+          <div style="font-family:'Fredoka One',cursive;font-size:12px;color:rgba(255,255,255,.35);">Tips: Tunjukkan jari ke kamera</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div id="feedback-overlay" class="full-overlay" style="display:none;">
+      <div id="feedback-emoji">✅</div>
+      <div id="feedback-msg">Benar!</div>
+      <div id="feedback-sub"></div>
+    </div>
+
+    <!-- Countdown -->
+    <div id="countdown-wrap"><div id="countdown-num">3</div></div>
+
+    <!-- START SCREEN -->
+    <div id="start-screen" class="full-overlay">
+      <h1>🧐 Tebak Hebat!</h1>
+      <p>Game edukasi 3 fase seru untuk anak TK!</p>
+      <div class="phase-card">
+        <b>📐 Fase 1 — Berhitung:</b><br>
+        Lihat soal tambah/kurang → angkat jari sebanyak jawaban yang benar!
+      </div>
+      <div class="phase-card">
+        <b>🗺️ Fase 2 — Tempat Populer:</b><br>
+        Lihat gambar tempat → sebutkan namanya lewat mic!
+      </div>
+      <div class="phase-card">
+        <b>🐾 Fase 3 — Mengenal Hewan:</b><br>
+        Lihat gambar hewan → sebutkan namanya lewat mic!
+      </div>
+      <div id="cam-status-txt">Menghubungkan kamera...</div>
+      <button class="btn-start" id="btn-start" onclick="startCountdown()" disabled>🎮 Mulai Belajar!</button>
+    </div>
+
+    <!-- END SCREEN -->
+    <div id="end-screen" class="full-overlay">
+      <h1>🎉 Selesai!</h1>
+      <div id="stars-row">⭐⭐⭐</div>
+      <div id="final-score-big">0</div>
+      <p id="end-msg">Hebat sekali! Kamu sangat pintar!</p>
+      <button class="btn-start" onclick="location.reload()">🔄 Main Lagi!</button>
+      <button class="btn-start" style="background:rgba(255,255,255,.1);color:white;box-shadow:none;margin-top:8px;"
+        onclick="window.location.href='index.html'">🏠 Kembali ke Menu</button>
+    </div>
+
+  </div><!-- /game-card -->
+</div><!-- /app -->
+
+<!-- MediaPipe Hands -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+<script>
+// ═══════════════════════════════════════════════
+//  STARFIELD
+// ═══════════════════════════════════════════════
+(function(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const d=document.createElement('div');
+    d.className='star-dot';
+    const sz=Math.random()*2.5+0.5;
+    d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s`;
+    c.appendChild(d);
+  }
+})();
+
+// ═══════════════════════════════════════════════
+//  QUESTIONS DATA
+// ═══════════════════════════════════════════════
+const MATH_QUESTIONS = [
+  {q:'1 + 1 = ?', answer:2},
+  {q:'2 + 1 = ?', answer:3},
+  {q:'3 + 2 = ?', answer:5},
+  {q:'4 + 1 = ?', answer:5},
+  {q:'2 + 2 = ?', answer:4},
+  {q:'5 - 1 = ?', answer:4},
+  {q:'4 - 2 = ?', answer:2},
+  {q:'3 - 1 = ?', answer:2},
+  {q:'1 + 3 = ?', answer:4},
+  {q:'2 + 3 = ?', answer:5},
+  {q:'6 - 1 = ?', answer:5},
+  {q:'3 + 3 = ?', answer:6},
+  {q:'7 - 2 = ?', answer:5},
+  {q:'4 + 3 = ?', answer:7},
+  {q:'5 + 2 = ?', answer:7},
+];
+
+const PLACES_QUESTIONS = [
+  {
+    emoji:'🏖️', name:'Pantai',
+    accept:['pantai','beach','laut'],
+    hint:'Tempat bermain pasir dan ombak',
+    options:['Pantai','Gunung','Hutan','Kota']
+  },
+  {
+    emoji:'🏔️', name:'Gunung',
+    accept:['gunung','mountain','bukit'],
+    hint:'Tempat yang sangat tinggi dan dingin',
+    options:['Gunung','Danau','Sawah','Pantai']
+  },
+  {
+    emoji:'🕌', name:'Masjid',
+    accept:['masjid','mesjid','mushola','mosque'],
+    hint:'Tempat ibadah umat Islam',
+    options:['Masjid','Gereja','Sekolah','Pasar']
+  },
+  {
+    emoji:'🏫', name:'Sekolah',
+    accept:['sekolah','school','belajar'],
+    hint:'Tempat anak-anak belajar',
+    options:['Sekolah','Rumah Sakit','Mall','Kantor']
+  },
+  {
+    emoji:'🏥', name:'Rumah Sakit',
+    accept:['rumah sakit','rs','hospital','klinik'],
+    hint:'Tempat orang sakit diobati dokter',
+    options:['Rumah Sakit','Apotek','Sekolah','Polisi']
+  },
+  {
+    emoji:'🛒', name:'Pasar',
+    accept:['pasar','market','mall','supermarket'],
+    hint:'Tempat membeli sayur, buah, dan barang',
+    options:['Pasar','Bandara','Stasiun','Pantai']
+  },
+  {
+    emoji:'✈️', name:'Bandara',
+    accept:['bandara','airport','lapangan terbang'],
+    hint:'Tempat pesawat terbang berangkat dan mendarat',
+    options:['Bandara','Pelabuhan','Stasiun','Terminal']
+  },
+  {
+    emoji:'🚉', name:'Stasiun',
+    accept:['stasiun','station','kereta'],
+    hint:'Tempat kereta api berhenti',
+    options:['Stasiun','Bandara','Pelabuhan','Terminal']
+  },
+];
+
+const ANIMALS_QUESTIONS = [
+  {
+    emoji:'🐘', name:'Gajah',
+    accept:['gajah','elephant','gajha'],
+    hint:'Hewan besar berbelalai panjang',
+    options:['Gajah','Singa','Jerapah','Kuda']
+  },
+  {
+    emoji:'🦁', name:'Singa',
+    accept:['singa','lion','harimau'],
+    hint:'Raja hutan berbulu lebat di leher',
+    options:['Singa','Macan','Beruang','Serigala']
+  },
+  {
+    emoji:'🦒', name:'Jerapah',
+    accept:['jerapah','giraffe','zirafah'],
+    hint:'Hewan berleher sangat panjang',
+    options:['Jerapah','Unta','Kuda','Zebra']
+  },
+  {
+    emoji:'🐸', name:'Katak',
+    accept:['katak','kodok','frog','kotak'],
+    hint:'Hewan hijau suka melompat dan bernyanyi di hujan',
+    options:['Katak','Cicak','Buaya','Ular']
+  },
+  {
+    emoji:'🐬', name:'Lumba-lumba',
+    accept:['lumba','lumba-lumba','dolphin'],
+    hint:'Hewan laut yang pintar dan suka bermain',
+    options:['Lumba-lumba','Hiu','Paus','Ikan']
+  },
+  {
+    emoji:'🦜', name:'Burung Beo',
+    accept:['beo','burung beo','parrot','kakatua'],
+    hint:'Burung warna-warni yang bisa menirukan suara',
+    options:['Burung Beo','Merpati','Elang','Penguin']
+  },
+  {
+    emoji:'🐻', name:'Beruang',
+    accept:['beruang','bear'],
+    hint:'Hewan besar berbulu lebat suka madu',
+    options:['Beruang','Gorila','Singa','Babi Hutan']
+  },
+  {
+    emoji:'🦊', name:'Rubah',
+    accept:['rubah','fox','serigala'],
+    hint:'Hewan kecil berbulu oranye dan sangat cerdik',
+    options:['Rubah','Serigala','Anjing','Kucing']
+  },
+];
+
+// ═══════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════
+let phase       = 1;  // 1=math, 2=places, 3=animals
+let qIndex      = 0;
+let lives       = 3;
+let score       = 0;
+let totalQ      = 0;
+let currentQ    = null;
+let canAnswer   = true;
+let fingerCount = 0;
+let fingerHoldTimer = 0;   // frames held at same count
+const HOLD_FRAMES = 45;    // ~1.5s hold to submit
+
+let mathQ, placesQ, animalsQ;
+
+// queues (shuffled)
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
+
+// ═══════════════════════════════════════════════
+//  MEDIAPIPE HANDS
+// ═══════════════════════════════════════════════
+const videoEl  = document.getElementById('cam-video');
+const canvasEl = document.getElementById('cam-canvas');
+const camCtx   = canvasEl.getContext('2d');
+
+let lastFingerCount = -1;
+let mpHands = null;
+let mpCamera = null;
+
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({video:true});
+    videoEl.srcObject = stream;
+
+    await new Promise(r=>videoEl.onloadedmetadata=r);
+    canvasEl.width  = videoEl.videoWidth  || 280;
+    canvasEl.height = videoEl.videoHeight || 210;
+
+    mpHands = new Hands({
+      locateFile: f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
+    });
+    mpHands.setOptions({
+      maxNumHands:2, modelComplexity:0,
+      minDetectionConfidence:.6, minTrackingConfidence:.5
+    });
+    mpHands.onResults(onHandResults);
+
+    mpCamera = new Camera(videoEl,{
+      onFrame: async()=>{ if(gameRunning) await mpHands.send({image:videoEl}); },
+      width:320, height:240
+    });
+    mpCamera.start();
+
+    document.getElementById('cam-status-txt').textContent='✅ Kamera siap!';
+    document.getElementById('btn-start').disabled=false;
+  } catch(e){
+    document.getElementById('cam-status-txt').textContent='❌ Kamera tidak ada — gunakan tombol jawaban di bawah';
+    document.getElementById('btn-start').disabled=false;
+  }
+}
+
+// ── Count fingers from landmarks ──
+function countFingers(landmarks) {
+  // Finger tips and pip joints indices
+  // Thumb: 4 vs 3 (x axis since thumb is horizontal)
+  // Others: tip(8,12,16,20) vs pip(6,10,14,18)
+  let count = 0;
+  // Thumb — compare x (mirrored)
+  if(landmarks[4].x < landmarks[3].x) count++;
+  // Index
+  if(landmarks[8].y < landmarks[6].y) count++;
+  // Middle
+  if(landmarks[12].y < landmarks[10].y) count++;
+  // Ring
+  if(landmarks[16].y < landmarks[14].y) count++;
+  // Pinky
+  if(landmarks[20].y < landmarks[18].y) count++;
+  return count;
+}
+
+function onHandResults(results) {
+  // Draw camera
+  canvasEl.width  = results.image.width;
+  canvasEl.height = results.image.height;
+  camCtx.clearRect(0,0,canvasEl.width,canvasEl.height);
+
+  let totalFingers = 0;
+
+  if(results.multiHandLandmarks && results.multiHandLandmarks.length>0){
+    for(const hand of results.multiHandLandmarks){
+      totalFingers += countFingers(hand);
+      // Draw skeleton
+      drawHandSkeleton(hand);
+    }
+  }
+
+  fingerCount = Math.min(10, totalFingers);
+  document.getElementById('finger-count-big').textContent = fingerCount;
+  document.getElementById('finger-indicator').textContent =
+    `🖐️ Jari terdeteksi: ${fingerCount}`;
+
+  // Phase 1: hold finger count to submit
+  if(phase===1 && canAnswer && currentQ) {
+    if(fingerCount === lastFingerCount && fingerCount > 0){
+      fingerHoldTimer++;
+      // Visual progress on finger count
+      const pct = Math.min(100, (fingerHoldTimer/HOLD_FRAMES)*100);
+      document.getElementById('finger-count-big').style.textShadow =
+        `0 0 ${30+pct*.5}px rgba(126,255,245,${.5+pct*.005})`;
+      if(fingerHoldTimer >= HOLD_FRAMES){
+        fingerHoldTimer = 0;
+        submitFingerAnswer(fingerCount);
+      }
+    } else {
+      fingerHoldTimer = 0;
+      document.getElementById('finger-count-big').style.textShadow =
+        '0 0 30px rgba(126,255,245,.5)';
+    }
+    lastFingerCount = fingerCount;
+  }
+}
+
+function drawHandSkeleton(lm) {
+  const W=canvasEl.width, H=canvasEl.height;
+  const connections=[
+    [0,1],[1,2],[2,3],[3,4],
+    [0,5],[5,6],[6,7],[7,8],
+    [0,9],[9,10],[10,11],[11,12],
+    [0,13],[13,14],[14,15],[15,16],
+    [0,17],[17,18],[18,19],[19,20],
+    [5,9],[9,13],[13,17]
+  ];
+  camCtx.strokeStyle='rgba(126,255,245,.7)';
+  camCtx.lineWidth=2;
+  for(const [a,b] of connections){
+    camCtx.beginPath();
+    camCtx.moveTo(lm[a].x*W, lm[a].y*H);
+    camCtx.lineTo(lm[b].x*W, lm[b].y*H);
+    camCtx.stroke();
+  }
+  for(let i=0;i<21;i++){
+    const isTip=[4,8,12,16,20].includes(i);
+    camCtx.fillStyle = isTip ? '#FFD700' : '#7EFFF5';
+    camCtx.beginPath();
+    camCtx.arc(lm[i].x*W, lm[i].y*H, isTip?5:3, 0, Math.PI*2);
+    camCtx.fill();
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  SPEECH RECOGNITION
+// ═══════════════════════════════════════════════
+let recognition = null;
+let isListening  = false;
+
+function initSpeech(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ console.warn('No speech recognition'); return; }
+  recognition = new SR();
+  recognition.lang = 'id-ID';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  recognition.onstart = ()=>{
+    isListening=true;
+    document.getElementById('mic-btn').classList.add('listening');
+    document.getElementById('mic-btn').textContent='🔴';
+    document.getElementById('speech-text').textContent='Mendengarkan...';
+  };
+  recognition.onend = ()=>{
+    isListening=false;
+    document.getElementById('mic-btn').classList.remove('listening');
+    document.getElementById('mic-btn').textContent='🎤';
+  };
+  recognition.onresult = (e)=>{
+    const transcript = e.results[e.results.length-1][0].transcript.trim().toLowerCase();
+    document.getElementById('speech-text').textContent = transcript;
+    if(e.results[e.results.length-1].isFinal && canAnswer){
+      submitSpeechAnswer(transcript);
+    }
+  };
+  recognition.onerror=(e)=>{
+    document.getElementById('speech-text').textContent='Tidak terdengar, coba lagi!';
+  };
+}
+
+function startListening(){
+  if(!recognition){ alert('Browser tidak mendukung mic. Gunakan tombol pilihan.'); return; }
+  if(isListening) recognition.stop();
+  else recognition.start();
+}
+
+// ═══════════════════════════════════════════════
+//  GAME FLOW
+// ═══════════════════════════════════════════════
+let gameRunning = false;
+
+function startCountdown(){
+  document.getElementById('start-screen').style.display='none';
+  const wrap=document.getElementById('countdown-wrap');
+  const num=document.getElementById('countdown-num');
+  wrap.style.display='flex';
+  let n=3; num.textContent=n;
+  const iv=setInterval(()=>{
+    n--;
+    if(n>0){
+      num.style.animation='none'; void num.offsetWidth;
+      num.style.animation='cnt-pop .8s ease-in-out';
+      num.textContent=n;
+    } else {
+      num.textContent='🧠 GO!';
+      setTimeout(()=>{ wrap.style.display='none'; startGame(); },700);
+      clearInterval(iv);
+    }
+  },900);
+}
+
+function startGame(){
+  gameRunning=true;
+  mathQ   = shuffle(MATH_QUESTIONS).slice(0,6);
+  placesQ = shuffle(PLACES_QUESTIONS).slice(0,5);
+  animalsQ= shuffle(ANIMALS_QUESTIONS).slice(0,5);
+  totalQ  = mathQ.length + placesQ.length + animalsQ.length;
+  phase=1; qIndex=0; lives=3; score=0;
+  initSpeech();
+  updateHUD();
+  loadQuestion();
+}
+
+function loadQuestion(){
+  canAnswer=true; fingerHoldTimer=0; lastFingerCount=-1;
+
+  let q;
+  if(phase===1){
+    if(qIndex>=mathQ.length){ phase=2; qIndex=0; loadQuestion(); return; }
+    q=mathQ[qIndex];
+    currentQ=q;
+    setPhaseUI('math');
+    document.getElementById('question-text').textContent=q.q;
+    document.getElementById('question-sub').textContent='Angkat jari sebanyak jawaban yang benar! Tahan sampai lingkaran penuh ✅';
+    document.getElementById('image-card').style.display='none';
+    document.getElementById('finger-display').style.display='block';
+    document.getElementById('speech-display').style.display='none';
+    document.getElementById('mic-btn').style.display='none';
+    document.getElementById('options-grid').style.display='none';
+    document.getElementById('finger-indicator').style.display='block';
+  } else {
+    const arr = phase===2 ? placesQ : animalsQ;
+    if(qIndex>=arr.length){
+      if(phase===2){ phase=3; qIndex=0; loadQuestion(); return; }
+      else { endGame(); return; }
+    }
+    q=arr[qIndex];
+    currentQ=q;
+    setPhaseUI(phase===2?'places':'animals');
+    document.getElementById('question-text').textContent='Apa nama ini?';
+    document.getElementById('question-sub').textContent=`💡 ${q.hint}`;
+    document.getElementById('image-card').style.display='flex';
+    document.getElementById('image-card').textContent=q.emoji;
+    document.getElementById('image-card').style.fontSize='90px';
+    document.getElementById('finger-display').style.display='none';
+    document.getElementById('speech-display').style.display='block';
+    document.getElementById('speech-text').textContent='Tekan 🎤 lalu jawab!';
+    document.getElementById('mic-btn').style.display='flex';
+    document.getElementById('finger-indicator').style.display='none';
+    // Show MCQ options
+    buildOptions(q.options, q.name);
+  }
+  updateProgress();
+}
+
+function setPhaseUI(type){
+  const pt=document.getElementById('phase-title');
+  pt.className='phase-title';
+  if(type==='math'){
+    pt.className='phase-title phase-math';
+    pt.textContent='📐 Fase 1: Berhitung — Angkat Jari!';
+    document.getElementById('phase-hud').textContent='📐 Fase 1: Berhitung';
+  } else if(type==='places'){
+    pt.className='phase-title phase-places';
+    pt.textContent='🗺️ Fase 2: Tempat Populer — Sebutkan!';
+    document.getElementById('phase-hud').textContent='🗺️ Fase 2: Tempat';
+  } else {
+    pt.className='phase-title phase-animals';
+    pt.textContent='🐾 Fase 3: Mengenal Hewan — Sebutkan!';
+    document.getElementById('phase-hud').textContent='🐾 Fase 3: Hewan';
+  }
+}
+
+function buildOptions(opts, correct){
+  const grid=document.getElementById('options-grid');
+  grid.innerHTML=''; grid.style.display='grid';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=opt;
+    btn.onclick=()=>{
+      if(!canAnswer) return;
+      const isCorrect=opt.toLowerCase()===correct.toLowerCase();
+      btn.classList.add(isCorrect?'correct-opt':'wrong-opt');
+      if(isCorrect) submitSpeechAnswer(correct.toLowerCase());
+      else submitSpeechAnswer(opt.toLowerCase());
+    };
+    grid.appendChild(btn);
+  });
+}
+
+// ── SUBMIT ANSWERS ──
+function submitFingerAnswer(count){
+  if(!canAnswer || !currentQ) return;
+  canAnswer=false;
+  const correct = count===currentQ.answer;
+  showFeedback(correct, correct?`${count} ✅ Benar!`:`Jawabannya ${currentQ.answer} jari!`);
+  if(correct) score+=10;
+  else { lives--; if(lives<0)lives=0; }
+  updateHUD();
+  setTimeout(()=>{ hideFeedback(); qIndex++; loadQuestion(); }, 2000);
+}
+
+function submitSpeechAnswer(text){
+  if(!canAnswer || !currentQ) return;
+  canAnswer=false;
+  if(isListening && recognition) recognition.stop();
+  const accepted=currentQ.accept.some(a=>text.includes(a));
+  showFeedback(accepted, accepted?`"${currentQ.name}" ✅ Benar!`:`Jawabannya "${currentQ.name}"!`);
+  if(accepted) score+=15;
+  else { lives--; if(lives<0)lives=0; }
+  updateHUD();
+  setTimeout(()=>{ hideFeedback(); qIndex++; loadQuestion(); }, 2200);
+}
+
+// ── FEEDBACK ──
+function showFeedback(correct, msg){
+  const ov=document.getElementById('feedback-overlay');
+  const em=document.getElementById('feedback-emoji');
+  const ms=document.getElementById('feedback-msg');
+  const sub=document.getElementById('feedback-sub');
+  ov.className='full-overlay '+(correct?'correct':'wrong');
+  em.textContent=correct?['🌟','🎉','🏆','✨','🥳'][Math.floor(Math.random()*5)]:'😅';
+  ms.textContent=correct?'Benar! Keren!':'Hampir Benar!';
+  sub.textContent=msg;
+  ov.style.display='flex';
+}
+function hideFeedback(){
+  document.getElementById('feedback-overlay').style.display='none';
+}
+
+// ── HUD ──
+function updateHUD(){
+  document.getElementById('lives-hud').textContent='❤️'.repeat(lives)+'🖤'.repeat(Math.max(0,3-lives));
+  document.getElementById('score-hud').textContent=`⭐ ${score}`;
+}
+function updateProgress(){
+  let done=0;
+  if(phase===1) done=qIndex;
+  else if(phase===2) done=mathQ.length+qIndex;
+  else done=mathQ.length+placesQ.length+qIndex;
+  const pct=Math.round((done/totalQ)*100);
+  document.getElementById('progress-bar').style.width=pct+'%';
+}
+
+// ── END ──
+function endGame(){
+  gameRunning=false;
+  const maxScore=totalQ*15;
+  const pct=score/maxScore;
+  let stars=pct>=.85?3:pct>=.6?2:1;
+  let msg=stars===3?'Luar biasa! Kamu sangat pintar! 🏆':
+          stars===2?'Bagus sekali! Terus belajar ya! 💪':
+                    'Jangan menyerah! Coba lagi! 😊';
+  document.getElementById('stars-row').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  document.getElementById('final-score-big').textContent=`${score} poin`;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='flex';
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+initCamera();
+</script>
+</body>
+</html>
