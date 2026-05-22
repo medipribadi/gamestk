@@ -1457,15 +1457,16 @@ hands.setOptions({
 
   modelComplexity:0,
 
-  minDetectionConfidence:0.7,
+  minDetectionConfidence:0.5,
 
-  minTrackingConfidence:0.7
+  minTrackingConfidence:0.5
 });
 
 /* TRACK */
 
 hands.onResults((results)=>{
 
+  console.log(results.multiHandLandmarks);
   if(
     results.multiHandLandmarks &&
     results.multiHandLandmarks.length > 0
@@ -1528,8 +1529,8 @@ const camera =
         });
       },
 
-      width:320,
-      height:240
+      width:640,
+      height:480
     }
   );
 

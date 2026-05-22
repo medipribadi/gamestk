@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dunia Warna TK V3</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Fredoka',sans-serif;
+}
+
+body{
+    background:
+    linear-gradient(
+        180deg,
+        #fff6df,
+        #ffe2b8
+    );
+
+    overflow-x:hidden;
+    min-height:100vh;
+    color:#5b3c11;
+}
+
+/* HEADER */
+
+.header{
+    text-align:center;
+    padding:25px 15px;
+}
+
+.header h1{
+    font-size:55px;
+    color:#ff7b00;
+    text-shadow:3px 3px white;
+}
+
+.header p{
+    margin-top:10px;
+    font-size:22px;
+}
+
+/* MENU */
+
+.theme-grid{
+
+    max-width:1200px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(230px,1fr));
+
+    gap:25px;
+
+    padding:20px;
+}
+
+.theme-card{
+
+    background:white;
+
+    border-radius:35px;
+
+    padding:25px;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    border:5px solid #ffd166;
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,0.08);
+}
+
+.theme-card:hover{
+
+    transform:
+    translateY(-8px)
+    scale(1.03);
+}
+
+.theme-card .emoji{
+
+    font-size:90px;
+    margin-bottom:15px;
+}
+
+.theme-card h2{
+
+    font-size:32px;
+    margin-bottom:10px;
+}
+
+/* GAME */
+
+#gamePage{
+    display:none;
+    padding:20px;
+}
+
+.top-ui{
+
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.palette-box,
+.example-box{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:20px;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.08);
+}
+
+.palette-box{
+    flex:1;
+}
+
+.example-box{
+
+    width:220px;
+    text-align:center;
+}
+
+.example-box img{
+
+    width:100%;
+    border-radius:20px;
+}
+
+/* COLORS */
+
+.palette{
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:15px;
+}
+
+.color{
+
+    width:58px;
+    height:58px;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    border:4px solid white;
+
+    transition:.2s;
+
+    box-shadow:
+    0 5px 12px rgba(0,0,0,0.18);
+}
+
+.color:hover{
+    transform:scale(1.12);
+}
+
+.active-color{
+
+    transform:scale(1.15);
+
+    border:5px solid #333;
+}
+
+/* DRAW AREA */
+
+.canvas-box{
+
+    background:white;
+
+    border-radius:35px;
+
+    padding:25px;
+
+    box-shadow:
+    0 15px 30px rgba(0,0,0,0.08);
+
+    text-align:center;
+}
+
+.canvas-wrapper{
+
+    position:relative;
+
+    width:100%;
+    max-width:900px;
+
+    margin:auto;
+}
+
+#outlineImage{
+
+    width:100%;
+
+    border-radius:25px;
+
+    border:5px dashed #ffd166;
+
+    background:white;
+
+    display:block;
+}
+
+#drawCanvas{
+
+    position:absolute;
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    border-radius:25px;
+
+    touch-action:none;
+}
+
+/* BUTTON */
+
+.buttons{
+
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+
+    gap:15px;
+
+    margin-top:25px;
+}
+
+.btn{
+
+    border:none;
+
+    padding:16px 28px;
+
+    border-radius:999px;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    color:white;
+}
+
+.reset{
+    background:#ff5a5a;
+}
+
+.finish{
+    background:#4caf50;
+}
+
+.back{
+    background:#3498db;
+}
+
+/* SPARK */
+
+.sparkle{
+
+    position:fixed;
+
+    font-size:25px;
+
+    pointer-events:none;
+
+    animation:spark 1s linear forwards;
+}
+
+@keyframes spark{
+
+    to{
+
+        transform:
+        translateY(-120px)
+        rotate(360deg);
+
+        opacity:0;
+    }
+}
+
+@media(max-width:768px){
+
+    .header h1{
+        font-size:38px;
+    }
+
+    .header p{
+        font-size:18px;
+    }
+
+    .top-ui{
+        flex-direction:column;
+    }
+
+    .example-box{
+        width:100%;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- MENU -->
+
+<div id="menuPage">
+
+    <div class="header">
+
+        <h1>🎨 Dunia Warna</h1>
+
+        <p>
+            Warnai gambar lucu sesuai contoh 😄
+        </p>
+
+    </div>
+
+    <div class="theme-grid">
+
+        <div class="theme-card"
+        onclick="startTheme('animal')">
+
+            <div class="emoji">🐱</div>
+
+            <h2>Hewan</h2>
+
+            <p>Mewarnai hewan lucu</p>
+
+        </div>
+
+        <div class="theme-card"
+        onclick="startTheme('house')">
+
+            <div class="emoji">🏠</div>
+
+            <h2>Rumah</h2>
+
+            <p>Mewarnai rumah ceria</p>
+
+        </div>
+
+        <div class="theme-card"
+        onclick="startTheme('nature')">
+
+            <div class="emoji">🌳</div>
+
+            <h2>Alam</h2>
+
+            <p>Mewarnai pemandangan</p>
+
+        </div>
+
+        <div class="theme-card"
+        onclick="startTheme('vehicle')">
+
+            <div class="emoji">🚗</div>
+
+            <h2>Kendaraan</h2>
+
+            <p>Mewarnai kendaraan</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- GAME -->
+
+<div id="gamePage">
+
+    <div class="top-ui">
+
+        <div class="palette-box">
+
+            <h2>🎨 Pilih Warna</h2>
+
+            <div class="palette" id="palette"></div>
+
+        </div>
+
+        <div class="example-box">
+
+            <h2>✨ Contoh</h2>
+
+            <img id="exampleImg">
+
+        </div>
+
+    </div>
+
+    <div class="canvas-box">
+
+        <div class="canvas-wrapper">
+
+            <img id="outlineImage">
+
+            <canvas id="drawCanvas"></canvas>
+
+        </div>
+
+        <div class="buttons">
+
+            <button class="btn reset"
+            onclick="undoLast()">
+
+                ↩ Undo
+
+            </button>
+
+            <button class="btn finish"
+            onclick="finishGame()">
+
+                🌟 Selesai
+
+            </button>
+
+            <button class="btn back"
+            onclick="goBack()">
+
+                🔙 Kembali
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const colors = [
+
+"#ff0000",
+"#ff7b00",
+"#ffd000",
+"#7bff00",
+"#00d084",
+"#00bfff",
+"#0066ff",
+"#7a00ff",
+"#ff00aa",
+"#ff8fab",
+"#8b4513",
+"#ffffff",
+"#000000",
+"#c0c0c0",
+"#00ffff",
+"#ffcc00"
+
+];
+
+let selectedColor = "#ff0000";
+
+const palette =
+document.getElementById("palette");
+
+colors.forEach(color=>{
+
+    const div =
+    document.createElement("div");
+
+    div.className = "color";
+
+    div.style.background = color;
+
+    div.onclick = ()=>{
+
+        selectedColor = color;
+
+        document
+        .querySelectorAll(".color")
+        .forEach(c=>
+            c.classList.remove(
+                "active-color"
+            )
+        );
+
+        div.classList.add(
+            "active-color"
+        );
+    };
+
+    palette.appendChild(div);
+});
+
+palette.children[0]
+.classList.add("active-color");
+
+/* IMAGES */
+
+const themes = {
+
+animal:[
+{
+outline:
+"https://i.imgur.com/3QyQZ6K.png",
+
+example:
+"https://i.imgur.com/oT9G6X6.png"
+},
+{
+outline:
+"https://i.imgur.com/o9K8K9h.png",
+
+example:
+"https://i.imgur.com/0vP7z2J.png"
+}
+],
+
+house:[
+{
+outline:
+"https://i.imgur.com/rY6X6lM.png",
+
+example:
+"https://i.imgur.com/VcN2rB6.png"
+}
+],
+
+nature:[
+{
+outline:
+"https://i.imgur.com/q2wK7wS.png",
+
+example:
+"https://i.imgur.com/m8sM2Q6.png"
+}
+],
+
+vehicle:[
+{
+outline:
+"https://i.imgur.com/6B8mK1M.png",
+
+example:
+"https://i.imgur.com/f2JQ6N9.png"
+}
+]
+
+};
+
+function startTheme(theme){
+
+    document.getElementById(
+        "menuPage"
+    ).style.display = "none";
+
+    document.getElementById(
+        "gamePage"
+    ).style.display = "block";
+
+    const data =
+    themes[theme];
+
+    const random =
+    data[
+        Math.floor(
+            Math.random()*data.length
+        )
+    ];
+
+    document.getElementById(
+        "outlineImage"
+    ).src = random.outline;
+
+    document.getElementById(
+        "exampleImg"
+    ).src = random.example;
+
+    setTimeout(initCanvas,500);
+}
+
+/* DRAW */
+
+const canvas =
+document.getElementById(
+    "drawCanvas"
+);
+
+const ctx =
+canvas.getContext("2d");
+
+let drawing = false;
+
+let history = [];
+
+function initCanvas(){
+
+    const img =
+    document.getElementById(
+        "outlineImage"
+    );
+
+    canvas.width =
+    img.clientWidth;
+
+    canvas.height =
+    img.clientHeight;
+
+    ctx.lineWidth = 18;
+
+    ctx.lineCap = "round";
+}
+
+function getPos(e){
+
+    const rect =
+    canvas.getBoundingClientRect();
+
+    if(e.touches){
+
+        return{
+
+            x:
+            e.touches[0].clientX
+            - rect.left,
+
+            y:
+            e.touches[0].clientY
+            - rect.top
+        };
+    }
+
+    return{
+
+        x:e.clientX - rect.left,
+        y:e.clientY - rect.top
+    };
+}
+
+function startDraw(e){
+
+    drawing = true;
+
+    history.push(
+        canvas.toDataURL()
+    );
+
+    draw(e);
+}
+
+function endDraw(){
+
+    drawing = false;
+
+    ctx.beginPath();
+}
+
+function draw(e){
+
+    if(!drawing) return;
+
+    const pos = getPos(e);
+
+    ctx.strokeStyle =
+    selectedColor;
+
+    ctx.lineTo(
+        pos.x,
+        pos.y
+    );
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        pos.x,
+        pos.y
+    );
+
+    sparkle(
+        pos.x,
+        pos.y
+    );
+}
+
+canvas.addEventListener(
+    "mousedown",
+    startDraw
+);
+
+canvas.addEventListener(
+    "mouseup",
+    endDraw
+);
+
+canvas.addEventListener(
+    "mousemove",
+    draw
+);
+
+canvas.addEventListener(
+    "touchstart",
+    startDraw
+);
+
+canvas.addEventListener(
+    "touchend",
+    endDraw
+);
+
+canvas.addEventListener(
+    "touchmove",
+    draw
+);
+
+function undoLast(){
+
+    if(history.length==0)
+    return;
+
+    const img =
+    new Image();
+
+    img.src =
+    history.pop();
+
+    img.onload = ()=>{
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        ctx.drawImage(
+            img,
+            0,
+            0
+        );
+    };
+}
+
+function sparkle(x,y){
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "sparkle";
+
+    div.innerHTML =
+    ["✨","⭐","🌈"]
+    [
+        Math.floor(
+            Math.random()*3
+        )
+    ];
+
+    div.style.left =
+    x + "px";
+
+    div.style.top =
+    y + "px";
+
+    document.body
+    .appendChild(div);
+
+    setTimeout(()=>{
+
+        div.remove();
+
+    },1000);
+}
+
+function finishGame(){
+
+    for(let i=0;i<20;i++){
+
+        sparkle(
+            Math.random()
+            *window.innerWidth,
+
+            Math.random()
+            *window.innerHeight
+        );
+    }
+
+    setTimeout(()=>{
+
+        alert(
+            "🌟 Hebat! Gambar kamu bagus 😍"
+        );
+
+    },400);
+}
+
+function goBack(){
+
+    location.reload();
+}
+
+window.addEventListener(
+    "resize",
+    initCanvas
+);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Dunia Warna TK</title>
+
+  <link rel="stylesheet" href="game4.css">
+
+  <script src="drawings.js" defer></script>
+  <script src="game4.js" defer></script>
+</head>
+
+<body>
+
+<div id="theme-screen">
+
+  <h1>🎨 Dunia Warna TK</h1>
+  <p>Pilih Tema Gambar</p>
+
+  <div class="theme-grid">
+
+    <button onclick="selectTheme('animals')">
+      🦁 Hewan
+    </button>
+
+    <button onclick="selectTheme('house')">
+      🏡 Rumah
+    </button>
+
+    <button onclick="selectTheme('landscape')">
+      🌈 Pemandangan
+    </button>
+
+    <button onclick="selectTheme('vehicle')">
+      🚗 Kendaraan
+    </button>
+
+  </div>
+</div>
+
+<div id="main-app">
+
+  <div id="topbar">
+
+    <div class="left-tools">
+
+      <button onclick="goHome()">
+        🏠 Menu
+      </button>
+
+      <button onclick="undoCanvas()">
+        ↩ Undo
+      </button>
+
+      <button onclick="clearCanvas()">
+        🗑 Hapus
+      </button>
+
+      <button onclick="nextDrawing()">
+        ⏭ Gambar Lain
+      </button>
+
+    </div>
+
+    <div class="right-tools">
+
+      <input
+        type="range"
+        min="2"
+        max="40"
+        value="10"
+        id="brushSize"
+      >
+
+      <button onclick="setEraser(false)">
+        🖌
+      </button>
+
+      <button onclick="setEraser(true)">
+        🧹
+      </button>
+
+    </div>
+
+  </div>
+
+  <div id="content">
+
+    <div id="color-sidebar"></div>
+
+    <div id="canvas-wrap">
+
+      <canvas id="drawCanvas"></canvas>
+
+      <canvas id="outlineCanvas"></canvas>
+
+    </div>
+
+    <div id="preview">
+
+      <h3>✨ Contoh</h3>
+
+      <canvas id="previewCanvas"></canvas>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
