@@ -294,104 +294,64 @@
   }
 
   /* FOOTER */
-  footer {
-    position: relative;
-    z-index: 1;
-    background: #3E2723;
-    color: white;
-    margin-top: 10px;
-  }
+  footer { position: relative; z-index: 1; background: #3E2723; color: white; margin-top: 10px; }
   .footer-wave { display: block; width: 100%; }
   .footer-inner {
-    max-width: 900px;
-    margin: 0 auto;
+    max-width: 900px; margin: 0 auto;
     padding: 30px 30px 24px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
     align-items: start;
   }
-  @media (max-width: 600px) {
-    .footer-inner { grid-template-columns: 1fr; }
-  }
-
-  .footer-logo {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 14px;
-  }
-  .footer-logo-badge {
-    background: #ffffff;
-    border-radius: 50%;
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    flex-shrink: 0;
-  }
-  .footer-campus-name {
-    font-family: 'Fredoka One', cursive;
-    font-size: 18px;
-    color: #FFB74D;
-    line-height: 1.2;
-  }
-  .footer-campus-sub {
-    font-size: 11px;
-    color: rgba(255,255,255,0.6);
-    font-weight: 700;
-  }
-  .footer-desc {
-    font-size: 12px;
-    color: rgba(255,255,255,0.55);
-    font-weight: 700;
-    line-height: 1.6;
-    margin-bottom: 14px;
-  }
-  .footer-socials {
-    display: flex;
-    gap: 10px;
-  }
-  .social-btn {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.1);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background 0.2s;
-    text-decoration: none;
-    color: white;
-  }
+  @media (max-width: 700px) { .footer-inner { grid-template-columns: 1fr; } }
+  .footer-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .footer-logo-badge { background: #ffffff; border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .footer-campus-name { font-family: 'Fredoka One', cursive; font-size: 18px; color: #FFB74D; line-height: 1.2; }
+  .footer-campus-sub { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 700; }
+  .footer-desc { font-size: 12px; color: rgba(255,255,255,0.55); font-weight: 700; line-height: 1.6; margin-bottom: 14px; }
+  .footer-socials { display: flex; gap: 10px; }
+  .social-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; transition: background 0.2s; text-decoration: none; color: white; }
   .social-btn:hover { background: #FF8E53; }
-
-  .footer-heading {
-    font-family: 'Fredoka One', cursive;
-    font-size: 16px;
-    color: #FFB74D;
-    margin-bottom: 12px;
-  }
-  .footer-info-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 9px;
-    font-size: 13px;
-    color: rgba(255,255,255,0.8);
-    line-height: 1.5;
-  }
+  .footer-heading { font-family: 'Fredoka One', cursive; font-size: 16px; color: #FFB74D; margin-bottom: 12px; }
+  .footer-info-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 9px; font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.5; }
   .footer-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-
-  .footer-bottom {
-    border-top: 1px solid rgba(255,255,255,0.1);
-    text-align: center;
-    padding: 14px 20px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.45);
-    font-weight: 700;
+ 
+  /* KRITIK & SARAN */
+  .ks-form { display: flex; flex-direction: column; gap: 8px; }
+  .ks-form textarea {
+    width: 100%; padding: 10px 12px; border-radius: 12px;
+    border: none; background: rgba(255,255,255,0.1);
+    color: white; font-family: 'Nunito', sans-serif;
+    font-size: 13px; font-weight: 700; resize: none;
+    outline: none; line-height: 1.5;
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: border-color .2s;
   }
+  .ks-form textarea::placeholder { color: rgba(255,255,255,0.35); }
+  .ks-form textarea:focus { border-color: rgba(255,255,255,0.4); }
+  .ks-form input[type="text"] {
+    width: 100%; padding: 9px 12px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.1); color: white;
+    font-family: 'Nunito', sans-serif; font-size: 13px;
+    font-weight: 700; outline: none; transition: border-color .2s;
+  }
+  .ks-form input[type="text"]::placeholder { color: rgba(255,255,255,0.35); }
+  .ks-form input[type="text"]:focus { border-color: rgba(255,255,255,0.4); }
+  .ks-submit {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 16px; border-radius: 50px; border: none; cursor: pointer;
+    background: #25D366; color: white;
+    font-family: 'Fredoka One', cursive; font-size: 14px;
+    text-decoration: none; transition: background .2s, transform .15s;
+    box-shadow: 0 4px 0 #1a9e4a;
+  }
+  .ks-submit:hover { background: #1ebe5d; transform: translateY(-2px); }
+  .ks-submit:active { transform: translateY(1px); box-shadow: 0 1px 0 #1a9e4a; }
+  .wa-icon { width: 18px; height: 18px; fill: white; flex-shrink: 0; }
+ 
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); text-align: center; padding: 14px 20px; font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 700; }
   .footer-bottom span { color: #FFB74D; }
 </style>
 </head>
@@ -550,12 +510,45 @@
         <span>Jl. Raya Kalimalang No. 2A Cipinang Melayu, Makasar Jakarta Timur, DKI Jakarta 13620</span>
       </div>
     </div>
-
+        <!-- Kolom 3: Kritik & Saran -->
+    <div>
+      <div class="footer-heading">💬 Kritik &amp; Saran</div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:10px;line-height:1.6;">
+        Ada masukan untuk kami? Tulis di sini dan kirim langsung via WhatsApp!
+      </p>
+      <div class="ks-form" id="ks-form">
+        <input type="text" id="ks-nama" placeholder="✏️ Nama kamu (opsional)">
+        <textarea id="ks-pesan" rows="3" placeholder="💬 Tulis kritik atau saran kamu..."></textarea>
+        <a class="ks-submit" id="ks-btn" href="#" onclick="kirimWA(event)">
+          <!-- WhatsApp SVG icon -->
+          <svg class="wa-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.668 4.61 1.832 6.5L4 29l7.75-1.813A11.94 11.94 0 0016 27c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 22a9.94 9.94 0 01-5.09-1.4l-.36-.214-4.6 1.077 1.1-4.47-.236-.368A9.96 9.96 0 016 15c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10zm5.522-7.478c-.302-.151-1.787-.882-2.064-.982-.277-.1-.479-.15-.68.15-.202.302-.78.982-.956 1.184-.176.2-.352.226-.654.075-.302-.15-1.275-.47-2.428-1.498-.897-.8-1.503-1.788-1.678-2.09-.176-.302-.019-.465.132-.615.136-.135.302-.352.453-.528.15-.176.2-.302.302-.503.1-.2.05-.378-.025-.528-.075-.15-.68-1.638-.932-2.242-.245-.588-.495-.508-.68-.517l-.578-.01c-.2 0-.528.075-.804.378-.277.302-1.056 1.032-1.056 2.517 0 1.485 1.081 2.92 1.232 3.12.15.2 2.127 3.25 5.155 4.557.72.31 1.282.495 1.72.634.723.23 1.382.197 1.902.12.58-.086 1.787-.73 2.04-1.435.252-.705.252-1.31.176-1.435-.075-.126-.277-.2-.578-.352z"/>
+          </svg>
+          Kirim via WhatsApp
+        </a>
+      </div>
+    </div>
   </div>
   <div class="footer-bottom">
     ©2026. <span>Universitas Asa Indonesia</span> — All Rights Reserved 🌟
   </div>
 </footer>
-
+<script>
+function kirimWA(e) {
+  e.preventDefault();
+  const nama   = document.getElementById('ks-nama').value.trim();
+  const pesan  = document.getElementById('ks-pesan').value.trim();
+  if (!pesan) {
+    alert('Tulis dulu kritik atau sarannya ya! 😊');
+    return;
+  }
+  const nomor  = '6281808418499';
+  const teks   = nama
+    ? `Halo, saya *${nama}* ingin menyampaikan kritik/saran:\n\n${pesan}`
+    : `Halo, saya ingin menyampaikan kritik/saran:\n\n${pesan}`;
+  const url    = `https://wa.me/${nomor}?text=${encodeURIComponent(teks)}`;
+  window.open(url, '_blank');
+}
+</script>
 </body>
 </html>

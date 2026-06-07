@@ -275,54 +275,110 @@ const shooter={ x:0, y:0, angle:-Math.PI/2, color:'', next:'' };
 function rnd(){ return COLORS[Math.floor(Math.random()*COLORS.length)]; }
 
 // ═══════════════════════════════════════════════
-//  HEX GRID  (pointy-top offset coords)
-//  Even rows: COLS bubbles, odd rows: COLS-1 bubbles, shifted right by R
+//  HEX GRID
 // ═══════════════════════════════════════════════
 let bubbles=[];
-const GRID_TOP=58;
+const GRID_TOP=55;  // px from top where row 0 starts
 
 function rowCols(row){ return row%2===0 ? COLS : COLS-1; }
 
-// World X of bubble centre at grid (col, row)
-function gx(col, row){
-  // Even row: cols 0..COLS-1 centred on screen
-  // Odd row:  cols 0..COLS-2 shifted right by R (half diameter)
-  const evenLeft = (W - (COLS-1)*R*2) / 2;
-  return row%2===0 ? evenLeft + col*R*2 : evenLeft + R + col*R*2;
+// x centre of a bubble at (col, row)
+function bx(col, row){
+  const totalW = (COLS-1)*R*2 + R; // even row total width
+  const left   = (W - totalW) / 2 + R;
+  return row%2===0 ? left + col*(R*2) : left + R + col*(R*2);
 }
-// World Y of bubble centre at row
-function gy(row){ return GRID_TOP + row * R * Math.sqrt(3); }
+// y centre of a bubble at row
+function by(row){ return GRID_TOP + row * (R * Math.sqrt(3)); }
 
 function rebuildGrid(keepPositions){
-  R = Math.max(13, Math.min(22, Math.floor(W / (COLS*2.2))));
+  R = Math.max(14, Math.min(22, Math.floor(W / (COLS*2.4))));
   shooter.x = W/2;
   shooter.y = H - 80;
   if(!keepPositions){
     shooter.color = rnd(); shooter.next = rnd();
     bubbles=[];
     for(let row=0;row<6;row++){
-      for(let col=0;col<rowCols(row);col++){
-        bubbles.push({col,row,x:gx(col,row),y:gy(row),color:rnd()});
+      const c=rowCols(row);
+      for(let col=0;col<c;col++){
+        bubbles.push({col,row,x:bx(col,row),y:by(row),color:rnd()});
       }
     }
   } else {
-    bubbles.forEach(b=>{ b.x=gx(b.col,b.row); b.y=gy(b.row); });
+    // recompute positions only
+    bubbles.forEach(b=>{ b.x=bx(b.col,b.row); b.y=by(b.row); });
   }
 }
 
-// ── True hex neighbors using pixel distance only ──
-// This avoids all col/row delta confusion: two bubbles are neighbors
-// if and only if their centre distance ≈ R*2 (one diameter apart).
-const NEIGHBOR_DIST = () => R * 2.2; // slight tolerance
-
-function getNeighbors(b){
-  return bubbles.filter(o=>{
-    if(o===b) return false;
-    return Math.hypot(o.x-b.x, o.y-b.y) < NEIGHBOR_DIST();
+// ── Find nearest empty hex cell to world (wx, wy) ──
+// We only search cells adjacent to existing bubbles (+ top row)
+function snapNearest(wx, wy){
+  // Collect candidate (col,row) pairs: neighbors of all bubbles
+  const seen=new Set();
+  const cands=[];
+  function tryCell(col,row){
+    if(row<0) return;
+    const key=col+','+row;
+    if(seen.has(key)) return;
+    seen.add(key);
+    // must not be occupied
+    const occ=bubbles.some(b=>b.col===col&&b.row===row);
+    if(occ) return;
+    const maxCols=rowCols(row);
+    if(col<0||col>=maxCols) return;
+    cands.push({col,row,x:bx(col,row),y:by(row)});
+  }
+  // candidates from neighbors of all existing bubbles
+  bubbles.forEach(b=>{
+    hexAdj(b).forEach(([dc,dr])=>{
+      const nc=b.col+dc, nr=b.row+dr;
+      tryCell(nc,nr);
+    });
   });
+  // also top row as fallback
+  for(let col=0;col<COLS;col++) tryCell(col,0);
+
+  if(!cands.length) return null;
+  // pick closest to (wx,wy)
+  let best=null;
+let bestScore=Infinity;
+
+cands.forEach(c=>{
+
+  const dist=Math.hypot(wx-c.x,wy-c.y);
+
+  // prioritas horizontal lebih kecil
+  const horizontal=Math.abs(wx-c.x);
+
+  // beri penalti besar kalau cell terlalu bawah
+  const verticalPenalty=(c.y-wy>R)?120:0;
+
+  const score=dist + horizontal*0.35 + verticalPenalty;
+
+  if(score<bestScore){
+    bestScore=score;
+    best=c;
+  }
+
+});
+
+return best;
 }
 
-// ── Same-color flood fill (only same color) ──
+// ── Hex adjacency directions ──
+function hexAdj(b){
+  return b.row%2===0
+    ? [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1]]
+    : [[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,1]];
+}
+
+function getNeighbors(b){
+  return hexAdj(b).map(([dc,dr])=>
+    bubbles.find(o=>o.col===b.col+dc&&o.row===b.row+dr)
+  ).filter(Boolean);
+}
+
+// Same-color flood fill
 function findMatches(start){
   const visited=new Set(), stack=[start];
   while(stack.length){
@@ -330,61 +386,21 @@ function findMatches(start){
     if(visited.has(cur)) continue;
     visited.add(cur);
     getNeighbors(cur).forEach(n=>{
-      if(n.color===start.color && !visited.has(n)) stack.push(n);
+      if(n.color===start.color&&!visited.has(n)) stack.push(n);
     });
   }
   return [...visited];
 }
 
-// ── Remove bubbles not reachable from top row by any color path ──
+// Remove bubbles not connected to top
 function removeFloating(){
-  // "connected" = reachable from any bubble in the topmost row
   const connected=new Set();
-  function dfs(b){
-    if(connected.has(b)) return;
-    connected.add(b);
-    getNeighbors(b).forEach(dfs); // walk ALL colors
-  }
-  // "top" = bubbles in the topmost occupied band
-  const minY = Math.min(...bubbles.map(b=>b.y));
-  bubbles.filter(b=>b.y <= minY + R*0.5).forEach(dfs);
+  function dfs(b){ if(connected.has(b)) return; connected.add(b); getNeighbors(b).forEach(dfs); }
+  bubbles.filter(b=>b.row<=0).forEach(dfs);
   const floaters=bubbles.filter(b=>!connected.has(b));
   floaters.forEach(b=>spawnParticles(b.x,b.y,b.color,8));
   bubbles=bubbles.filter(b=>connected.has(b));
   return floaters.length;
-}
-
-// ── Snap bullet to the best empty grid position ──
-// Strategy: for each existing bubble, enumerate its 6 hex neighbor
-// slots; keep only empty ones; pick the one closest to bullet pos.
-function snapBullet(bxPos, byPos){
-  // All 6 hex directions in world-space (pointy-top hex)
-  const hexDirs = [
-    [R*2, 0], [-R*2, 0],           // left, right
-    [R,  R*Math.sqrt(3)],           // lower-right
-    [-R, R*Math.sqrt(3)],           // lower-left
-    [R,  -R*Math.sqrt(3)],          // upper-right
-    [-R, -R*Math.sqrt(3)],          // upper-left
-  ];
-
-  const seen=new Set();
-  let best=null, bestDist=Infinity;
-
-  bubbles.forEach(b=>{
-    hexDirs.forEach(([dx,dy])=>{
-      const cx=b.x+dx, cy=b.y+dy;
-      if(cy<GRID_TOP-R || cx<R || cx>W-R) return; // out of bounds
-      const key=Math.round(cx)+','+Math.round(cy);
-      if(seen.has(key)) return; seen.add(key);
-      // Must not overlap any existing bubble
-      const occupied=bubbles.some(o=>Math.hypot(o.x-cx,o.y-cy)<R*1.8);
-      if(occupied) return;
-      const d=Math.hypot(bxPos-cx, byPos-cy);
-      if(d<bestDist){ bestDist=d; best={x:cx,y:cy}; }
-    });
-  });
-
-  return best; // world coords, not grid coords (simpler & more accurate)
 }
 
 // ═══════════════════════════════════════════════
@@ -452,7 +468,7 @@ function drawAim(){
     if(x<=R){x=R;dx*=-1;} if(x>=W-R){x=W-R;dx*=-1;}
     const hit=bubbles.some(b=>Math.hypot(x-b.x,y-b.y)<R*2);
     ctx.lineTo(x,y);
-    if(hit||y<GRID_TOP) break;
+    if(hit||y<R) break;
   }
   ctx.stroke(); ctx.setLineDash([]);
 }
@@ -481,20 +497,18 @@ function deathY(){ return H-145; }
 // ═══════════════════════════════════════════════
 //  GAME LOGIC
 // ═══════════════════════════════════════════════
-function placeBullet(pos, color){
-  if(!pos) return; // no valid position found — discard silently
-  const newB={x:pos.x, y:pos.y, col:-1, row:-1, color};
+function placeBullet(wx,wy,color){
+  const cell=snapNearest(wx,wy);
+  if(!cell) return;
+  const newB={col:cell.col,row:cell.row,x:cell.x,y:cell.y,color};
   bubbles.push(newB);
 
-  // findMatches uses pixel-distance neighbors — works with world coords
   const matches=findMatches(newB);
   if(matches.length>=3){
-    // Remove matched bubbles FIRST before removeFloating
-    const ids=new Set(matches);
-    bubbles=bubbles.filter(b=>!ids.has(b));
     matches.forEach(m=>spawnParticles(m.x,m.y,m.color,10));
     playPop(matches.length);
-    // Now remove floaters (bubbles disconnected from top)
+    const ids=new Set(matches);
+    bubbles=bubbles.filter(b=>!ids.has(b));
     const fc=removeFloating();
     showCombo(matches.length+fc);
     let pts=matches.length>=10?50:matches.length>=7?30:matches.length>=5?20:10;
@@ -580,39 +594,33 @@ function loop(){
   // bullet
   if(bullet){
     bullet.x+=bullet.dx; bullet.y+=bullet.dy;
-    // Wall bounce (left/right)
-    if(bullet.x<R){bullet.x=R; bullet.dx*=-1;}
-    if(bullet.x>W-R){bullet.x=W-R; bullet.dx*=-1;}
-
+    if(bullet.x<R){bullet.x=R;bullet.dx*=-1;}
+    if(bullet.x>W-R){bullet.x=W-R;bullet.dx*=-1;}
     drawBubble(bullet.x,bullet.y,bullet.color);
 
-    // Check collision with any existing bubble
-    let hit=false;
-    for(const b of bubbles){
-      // Use R*1.98 so bullet triggers just as it touches the bubble
-      if(Math.hypot(bullet.x-b.x, bullet.y-b.y) < R*1.98){
-        // snapBullet finds the closest EMPTY hex slot near bullet position
-        const pos=snapBullet(bullet.x, bullet.y);
-        placeBullet(pos, bullet.color);
-        bullet=null; hit=true; break;
-      }
-    }
-    if(hit) return; // already handled
+    // collision with existing bubbles
+let hit=false;
 
-    // Bullet reached top wall
-    if(bullet && bullet.y <= GRID_TOP + R){
-      if(bubbles.length>0){
-        // Attach to nearest empty slot near ceiling
-        const pos=snapBullet(bullet.x, GRID_TOP+R);
-        placeBullet(pos, bullet.color);
-      }
-      // If no bubbles at all, just discard
-      bullet=null;
-    }
+for(const b of bubbles){
 
-    // Safety: discard if off-screen
-    if(bullet && (bullet.y > H || bullet.y < -R*4)){ bullet=null; }
+  if(Math.hypot(bullet.x-b.x,bullet.y-b.y)<(R*1.92)){
+
+    const dx = bullet.x - b.x;
+    const dy = bullet.y - b.y;
+
+    const len = Math.hypot(dx,dy);
+
+    placeBullet(
+      bullet.x + (dx/len)*R,
+      bullet.y + (dy/len)*R,
+      bullet.color
+    );
+
+    bullet=null;
+    hit=true;
+    break;
   }
+}
 
   // particles
   particles=particles.filter(p=>p.life>0.02);
@@ -677,13 +685,9 @@ setInterval(()=>{
 
 setInterval(()=>{
   if(!gameStarted||gameOver||gameWin) return;
-  // Shift all bubbles down by one hex row height
-  const rowH = R*Math.sqrt(3);
-  bubbles.forEach(b=>{ b.y+=rowH; });
-  // Add new row at top using even-row slots (row 0)
-  for(let col=0;col<COLS;col++){
-    bubbles.push({col,row:0, x:gx(col,0), y:gy(0), color:rnd()});
-  }
+  bubbles.forEach(b=>{ b.row+=1; b.x=bx(b.col,b.row); b.y=by(b.row); });
+  const c=rowCols(0);
+  for(let col=0;col<c;col++) bubbles.push({col,row:0,x:bx(col,0),y:by(0),color:rnd()});
 },28000);
 
 function saveLeaderboard(){
@@ -729,61 +733,79 @@ loop();
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 <script>
-const videoEl=document.getElementById('input_video');
-const handStatusEl=document.getElementById('handStatus');
-let mpHands=null, mpCamera=null, canShootHand=true, prevOpen=false;
+const videoEl = document.getElementById('input_video');
+const handStatusEl = document.getElementById('handStatus');
+let mpHands = null;
+let mpCamera = null;
+let canShootHand = true;
+let prevOpen = false;
 
-function startCamera(){
-  videoEl.style.display='block';
-  handStatusEl.style.display='block';
-  resize(); // reposition
+function startCamera() {
+  videoEl.style.display = 'block';
+  handStatusEl.style.display = 'block';
+  resize();
 
-  mpHands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
-  mpHands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:0.65,minTrackingConfidence:0.55});
+  mpHands = new Hands({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+  });
+  mpHands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 0,
+    minDetectionConfidence: 0.65,
+    minTrackingConfidence: 0.55
+  });
   mpHands.onResults(onHandResult);
 
-  mpCamera=new Camera(videoEl,{
-    onFrame:async()=>{ if(mpHands) await mpHands.send({image:videoEl}); },
-    width:320,height:240
+  mpCamera = new Camera(videoEl, {
+    onFrame: async () => {
+      if (mpHands) await mpHands.send({ image: videoEl });
+    },
+    width: 320,
+    height: 240
   });
-  mpCamera.start().catch(e=>{
-    handStatusEl.textContent='❌ Kamera gagal';
-    console.warn('Camera error:',e);
+
+  mpCamera.start().catch((e) => {
+    handStatusEl.textContent = '❌ Kamera gagal';
+    console.warn('Camera error:', e);
   });
 }
 
-function onHandResult(results){
-  if(!gameStarted||gameOver||gameWin) return;
-  if(!results.multiHandLandmarks||!results.multiHandLandmarks.length){
-    handStatusEl.textContent='🤚 Tunjukkan tangan...'; prevOpen=false; return;
+function onHandResult(results) {
+  if (!gameStarted || gameOver || gameWin) return;
+  if (!results.multiHandLandmarks || !results.multiHandLandmarks.length) {
+    handStatusEl.textContent = '🤚 Tunjukkan tangan...';
+    prevOpen = false;
+    return;
   }
-  const lm=results.multiHandLandmarks[0];
 
-  // Aim: index fingertip (landmark 8), mirrored
-  const tipX=(1-lm[8].x)*W, tipY=lm[8].y*H;
-  shooter.angle=Math.atan2(tipY-shooter.y,tipX-shooter.x);
+  const lm = results.multiHandLandmarks[0];
+  const tipX = (1 - lm[8].x) * W;
+  const tipY = lm[8].y * H;
+  shooter.angle = Math.atan2(tipY - shooter.y, tipX - shooter.x);
 
-  // Count extended fingers
-  const tips=[8,12,16,20], pips=[6,10,14,18];
-  let open=0;
-  for(let i=0;i<4;i++) if(lm[tips[i]].y<lm[pips[i]].y) open++;
-  // thumb (mirrored camera so x comparison flipped)
-  if(lm[4].x<lm[3].x) open++;
+  const tips = [8, 12, 16, 20];
+  const pips = [6, 10, 14, 18];
+  let open = 0;
+  for (let i = 0; i < tips.length; i++) {
+    if (lm[tips[i]].y < lm[pips[i]].y) open++;
+  }
+  if (lm[4].x < lm[3].x) open++;
 
-  const isOpen=open>=5;
-
-  if(isOpen){
-    handStatusEl.textContent='✋ TEMBAK!';
-    // fire only on rising edge (closed→open), with cooldown
-    if(!prevOpen&&canShootHand){
-      canShootHand=false;
+  const isOpen = open >= 5;
+  if (isOpen) {
+    handStatusEl.textContent = '✋ TEMBAK!';
+    if (!prevOpen && canShootHand) {
+      canShootHand = false;
       shootBubble();
-      setTimeout(()=>{ canShootHand=true; },900);
+      setTimeout(() => {
+        canShootHand = true;
+      }, 900);
     }
   } else {
-    handStatusEl.textContent= open===1 ? '☝️ Membidik...' : `🤚 ${open} jari`;
+    handStatusEl.textContent = open === 1 ? '☝️ Membidik...' : `🤚 ${open} jari`;
   }
-  prevOpen=isOpen;
+
+  prevOpen = isOpen;
 }
 </script>
 </body>

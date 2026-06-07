@@ -1,117 +1,1582 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Dunia Warna TK</title>
+<title>🎨 Dunia Warna</title>
 
-  <link rel="stylesheet" href="game4.css">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <script src="drawings.js" defer></script>
-  <script src="game4.js" defer></script>
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Fredoka',sans-serif;
+}
+
+body{
+
+    background:
+    linear-gradient(
+        180deg,
+        #fff7e6,
+        #ffe7c2
+    );
+
+    overflow:hidden;
+
+    color:#5b3c11;
+}
+
+/* HEADER */
+
+.header{
+
+    text-align:center;
+
+    padding:20px;
+}
+
+.header h1{
+
+    font-size:55px;
+
+    color:#ff7b00;
+
+    text-shadow:
+    3px 3px white;
+}
+
+.header p{
+
+    margin-top:10px;
+
+    font-size:20px;
+}
+
+/* MENU */
+
+#menuPage{
+
+    height:100vh;
+
+    overflow:auto;
+}
+
+.theme-grid{
+
+    max-width:1200px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(240px,1fr));
+
+    gap:25px;
+
+    padding:20px;
+}
+
+.theme-card{
+
+    background:white;
+
+    border-radius:35px;
+
+    padding:30px;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    border:5px solid #ffd166;
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,0.08);
+}
+
+.theme-card:hover{
+
+    transform:
+    translateY(-8px)
+    scale(1.03);
+}
+
+.theme-card .emoji{
+
+    font-size:90px;
+
+    margin-bottom:15px;
+}
+
+.theme-card h2{
+
+    font-size:34px;
+
+    margin-bottom:10px;
+}
+
+/* GAME PAGE */
+
+#gamePage{
+
+    display:none;
+
+    height:100vh;
+
+    padding:15px;
+
+    overflow:hidden;
+}
+
+/* TOPBAR */
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:15px;
+
+    flex-wrap:wrap;
+
+    margin-bottom:15px;
+}
+
+.tools{
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+}
+
+.btn{
+
+    border:none;
+
+    border-radius:999px;
+
+    padding:14px 22px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    color:white;
+
+    transition:.2s;
+}
+
+.btn:hover{
+
+    transform:scale(1.05);
+}
+
+.home{
+    background:#3498db;
+}
+
+.undo{
+    background:#ff6b6b;
+}
+
+.clear{
+    background:#8e44ad;
+}
+
+.next{
+    background:#2ecc71;
+}
+
+.finish{
+    background:#f39c12;
+}
+
+/* SIZE */
+
+.size-box{
+
+    background:white;
+
+    padding:10px 18px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,0.08);
+}
+
+/* CONTENT */
+
+.content{
+
+    display:grid;
+
+    grid-template-columns:
+    100px 1fr 250px;
+
+    gap:15px;
+
+    height:calc(100vh - 150px);
+}
+
+/* COLORS */
+
+.colors{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:15px;
+
+    overflow:auto;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.08);
+}
+
+.color{
+
+    width:60px;
+    height:60px;
+
+    border-radius:50%;
+
+    margin-bottom:12px;
+
+    cursor:pointer;
+
+    border:4px solid white;
+
+    transition:.2s;
+
+    box-shadow:
+    0 5px 12px rgba(0,0,0,0.15);
+}
+
+.color:hover{
+
+    transform:scale(1.1);
+}
+
+.active{
+
+    border:5px solid #333;
+
+    transform:scale(1.15);
+}
+
+.ai-cursor{
+
+    position:fixed;
+
+    width:28px;
+    height:28px;
+
+    border-radius:50%;
+
+    background:
+    rgba(255,255,255,0.7);
+
+    border:4px solid #ff9800;
+
+    pointer-events:none;
+
+    z-index:99999;
+
+    transform:
+    translate(-50%,-50%);
+
+    display:none;
+}
+
+/* CANVAS */
+
+.canvas-box{
+
+    position:relative;
+
+    background:white;
+
+    border-radius:35px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 15px 30px rgba(0,0,0,0.08);
+}
+
+#outlineImage{
+
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+
+    pointer-events:none;
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    z-index:1;
+}
+
+#drawCanvas{
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    z-index:2;
+
+    touch-action:none;
+}
+
+/* PREVIEW */
+
+.preview{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:15px;
+
+    text-align:center;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.08);
+}
+
+.preview h2{
+
+    margin-bottom:15px;
+}
+
+.preview img{
+
+    width:100%;
+
+    border-radius:20px;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .content{
+
+        grid-template-columns:
+        80px 1fr;
+
+    }
+
+    .preview{
+
+        display:none;
+    }
+}
+
+@media(max-width:700px){
+
+    .header h1{
+
+        font-size:38px;
+    }
+
+    .content{
+
+        grid-template-columns:
+        1fr;
+
+        grid-template-rows:
+        90px 1fr;
+    }
+
+    .colors{
+
+        display:flex;
+
+        overflow-x:auto;
+
+        overflow-y:hidden;
+
+        gap:10px;
+    }
+
+    .color{
+
+        min-width:55px;
+
+        min-height:55px;
+
+        margin-bottom:0;
+    }
+}
+#welcomeModal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+    rgba(0,0,0,0.5);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:999999;
+}
+
+.welcome-card{
+
+    width:90%;
+
+    max-width:700px;
+
+    background:white;
+
+    border-radius:35px;
+
+    padding:35px;
+
+    text-align:center;
+
+    box-shadow:
+    0 20px 40px rgba(0,0,0,0.2);
+}
+
+.welcome-card h1{
+
+    color:#ff7b00;
+
+    font-size:45px;
+
+    margin-bottom:10px;
+}
+
+.rule-box{
+
+    margin-top:20px;
+
+    text-align:left;
+
+    background:#fff7e6;
+
+    padding:20px;
+
+    border-radius:25px;
+}
+
+.rule-box h2{
+
+    margin-bottom:10px;
+
+    color:#ff7b00;
+}
+
+.rule-box p{
+
+    margin:8px 0;
+
+    font-size:18px;
+}
+
+.start-btn{
+
+    margin-top:25px;
+
+    border:none;
+
+    background:#2ecc71;
+
+    color:white;
+
+    padding:18px 35px;
+
+    font-size:24px;
+
+    border-radius:999px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+}
+
+.start-btn:hover{
+
+    transform:scale(1.05);
+}
+
+</style>
 </head>
 
 <body>
+    <div id="welcomeModal">
 
-<div id="theme-screen">
+    <div class="welcome-card">
 
-  <h1>🎨 Dunia Warna TK</h1>
-  <p>Pilih Tema Gambar</p>
+        <h1>🎨 Dunia Warna!</h1>
 
-  <div class="theme-grid">
+        <p>
+            Yuk belajar mewarnai sambil bermain 😊
+        </p>
 
-    <button onclick="selectTheme('animals')">
-      🦁 Hewan
-    </button>
+        <div class="rule-box">
 
-    <button onclick="selectTheme('house')">
-      🏡 Rumah
-    </button>
+            <h2>📌 Cara Bermain</h2>
 
-    <button onclick="selectTheme('landscape')">
-      🌈 Pemandangan
-    </button>
+            <p>
+                🎨 Pilih warna yang kamu suka
+            </p>
 
-    <button onclick="selectTheme('vehicle')">
-      🚗 Kendaraan
-    </button>
+            <p>
+                🖌 Warnai gambar mengikuti contoh
+            </p>
 
-  </div>
-</div>
+            <p>
+                🔄 Klik Random untuk gambar baru
+            </p>
 
-<div id="main-app">
+            <p>
+                ↩ Gunakan Undo jika salah
+            </p>
 
-  <div id="topbar">
+            <p>
+                🗑 Hapus untuk mengulang gambar
+            </p>
 
-    <div class="left-tools">
+            <br>
 
-      <button onclick="goHome()">
-        🏠 Menu
-      </button>
+            <h2>🤖 Mode AI</h2>
 
-      <button onclick="undoCanvas()">
-        ↩ Undo
-      </button>
+            <p>
+                👆 Gerakkan telunjuk untuk menggerakkan cursor
+            </p>
 
-      <button onclick="clearCanvas()">
-        🗑 Hapus
-      </button>
+            <p>
+                🤏 Satukan jempol dan telunjuk untuk menggambar
+            </p>
 
-      <button onclick="nextDrawing()">
-        ⏭ Gambar Lain
-      </button>
+            <p>
+                🎨 Diamkan cursor di warna selama 1 detik untuk memilih warna
+            </p>
 
-    </div>
+            <p>
+                ✋ Buka 5 jari untuk berhenti menggambar
+            </p>
 
-    <div class="right-tools">
+        </div>
 
-      <input
-        type="range"
-        min="2"
-        max="40"
-        value="10"
-        id="brushSize"
-      >
+        <button
+        class="start-btn"
+        onclick="startGame()">
 
-      <button onclick="setEraser(false)">
-        🖌
-      </button>
+            🎨 Mulai Mewarnai
 
-      <button onclick="setEraser(true)">
-        🧹
-      </button>
+        </button>
 
     </div>
-
-  </div>
-
-  <div id="content">
-
-    <div id="color-sidebar"></div>
-
-    <div id="canvas-wrap">
-
-      <canvas id="drawCanvas"></canvas>
-
-      <canvas id="outlineCanvas"></canvas>
-
-    </div>
-
-    <div id="preview">
-
-      <h3>✨ Contoh</h3>
-
-      <canvas id="previewCanvas"></canvas>
-
-    </div>
-
-  </div>
 
 </div>
 
+<!-- MENU -->
+
+<div id="menuPage">
+
+    <div class="header">
+
+        <h1>🎨 Dunia Warna</h1>
+
+        <p>
+            Warnai gambar lucu sesuai contoh 😄
+        </p>
+
+    </div>
+
+    <div class="theme-grid">
+
+        <div class="theme-card"
+        onclick="startTheme('hewan')">
+
+            <div class="emoji">🐱</div>
+
+            <h2>Hewan</h2>
+
+        </div>
+
+        <div class="theme-card"
+        onclick="startTheme('alam')">
+
+            <div class="emoji">🌈</div>
+
+            <h2>Alam</h2>
+
+        </div>
+
+        <div class="theme-card"
+        onclick="startTheme('bangunan')">
+
+            <div class="emoji">🏠</div>
+
+            <h2>Bangunan</h2>
+
+        </div>
+
+        <div class="theme-card"
+        onclick="startTheme('kendaraan')">
+
+            <div class="emoji">🚗</div>
+
+            <h2>Kendaraan</h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- GAME -->
+
+<div id="gamePage">
+
+    <div class="topbar">
+
+        <div class="tools">
+
+            <button class="btn home"
+            onclick="goHome()">
+
+                🏠 Menu
+
+            </button>
+
+            <button class="btn undo"
+            onclick="undoLast()">
+
+                ↩ Undo
+
+            </button>
+
+            <button class="btn clear"
+            onclick="clearCanvas()">
+
+                🗑 Hapus
+
+            </button>
+
+            <button class="btn next"
+            onclick="nextImage()">
+
+                🔄 Random
+
+            </button>
+
+            <button
+id="aiToggle"
+class="btn"
+style="
+background:#222;
+"
+onclick="toggleAI()">
+
+🤖 AI OFF
+
+</button>
+
+            <button class="btn finish"
+            onclick="finishGame()">
+
+                🌟 Selesai
+
+            </button>
+
+        </div>
+
+        <div class="size-box">
+
+            🖌 Ukuran :
+            <input
+            type="range"
+            id="brushSize"
+            min="5"
+            max="50"
+            value="14">
+
+        </div>
+
+    </div>
+
+    <div class="content">
+
+        <div class="colors"
+        id="colors"></div>
+
+        <div class="canvas-box">
+
+            <img id="outlineImage">
+
+            <canvas id="drawCanvas"></canvas>
+
+        </div>
+
+        <div class="preview">
+
+            <h2>✨ Contoh</h2>
+
+            <img id="previewImage">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+/* COLORS */
+
+const colorList = [
+
+"#ff0000",
+"#ff7b00",
+"#ffd000",
+"#7bff00",
+"#00d084",
+"#00bfff",
+"#0066ff",
+"#7a00ff",
+"#ff00aa",
+"#ff8fab",
+"#8b4513",
+"#ffffff",
+"#000000",
+"#c0c0c0",
+"#00ffff",
+"#ffcc00"
+
+];
+
+const colorsContainer =
+document.getElementById(
+    "colors"
+);
+
+let selectedColor =
+"#ff0000";
+
+colorList.forEach(color=>{
+
+    const div =
+    document.createElement("div");
+    
+
+div.classList.add("color-btn");
+
+    div.className =
+"color color-btn";
+
+    div.style.background =
+    color;
+
+    div.onclick = ()=>{
+
+        selectedColor = color;
+
+        document
+        .querySelectorAll(".color")
+        .forEach(c=>
+            c.classList.remove(
+                "active"
+            )
+        );
+
+        div.classList.add(
+            "active"
+        );
+    };
+
+    colorsContainer
+    .appendChild(div);
+});
+
+colorsContainer.children[0]
+.classList.add("active");
+
+/* DATA */
+
+const themes = {
+
+hewan:[
+
+{
+outline:"images/beruangmini_outline.png",
+fix:"images/beruangmini_fix.png"
+},
+
+{
+outline:"images/dinausaurus_outline.jpg",
+fix:"images/dinausaurus_fix.png"
+},
+
+{
+outline:"images/kelinci_outline.png",
+fix:"images/kelinci_fix.png"
+},
+
+{
+outline:"images/kucing_outline.jpg",
+fix:"images/kucing_fix.png"
+},
+
+{
+outline:"images/singa_outline.jpg",
+fix:"images/singa_fix.png"
+}
+
+],
+
+alam:[
+
+{
+outline:"images/curug_outline.jpg",
+fix:"images/curug_fix.png"
+},
+
+{
+outline:"images/gunung_outline.jpg",
+fix:"images/gunung_fix.png"
+},
+
+{
+outline:"images/hutan_outline.jpg",
+fix:"images/hutan_fix.png"
+},
+
+{
+outline:"images/mountain_outline.jpg",
+fix:"images/mountain_fix.png"
+},
+
+{
+outline:"images/pantai_outline.jpg",
+fix:"images/pantai_fix.png"
+},
+
+{
+outline:"images/anakperempuan_outline.jpg",
+fix:"images/anakperempuan_fix.png"
+}
+
+],
+
+bangunan:[
+
+{
+outline:"images/museum_outline.jpg",
+fix:"images/museum_fix.png"
+},
+
+{
+outline:"images/masjid_outline.jpg",
+fix:"images/masjid_fix.png"
+},
+
+{
+outline:"images/house_outline.jpg",
+fix:"images/house_fix.png"
+},
+
+{
+outline:"images/china_outline.jpg",
+fix:"images/china_fix.png"
+},
+
+{
+outline:"images/cafe_outline.jpg",
+fix:"images/cafe_fix.png"
+}
+
+],
+
+kendaraan:[
+
+{
+outline:"images/truck_outline.jpg",
+fix:"images/truck_fix.png"
+},
+
+{
+outline:"images/perahu_outline.jpg",
+fix:"images/perahu_fix.png"
+},
+
+{
+outline:"images/pesawat_outline.jpg",
+fix:"images/pesawat_fix.png"
+},
+
+{
+outline:"images/bus_outline.jpg",
+fix:"images/bus_fix.png"
+},
+
+{
+outline:"images/car_outline.jpg",
+fix:"images/car_fix.png"
+}
+
+]
+
+};
+
+/* START */
+
+let currentTheme = "hewan";
+
+function startTheme(theme){
+    
+    currentTheme = theme;
+
+    document.getElementById(
+        "menuPage"
+    ).style.display = "none";
+
+    document.getElementById(
+        "gamePage"
+    ).style.display = "block";
+
+    loadRandomImage();
+
+    resizeCanvas();
+}
+
+/* RANDOM IMAGE */
+
+function loadRandomImage(){
+
+    const data =
+    themes[currentTheme];
+
+    const random =
+    data[
+        Math.floor(
+            Math.random()*data.length
+        )
+    ];
+
+    document.getElementById(
+        "outlineImage"
+    ).src = random.outline;
+
+    document.getElementById(
+        "previewImage"
+    ).src = random.fix;
+}
+
+/* CANVAS */
+
+const canvas =
+document.getElementById(
+    "drawCanvas"
+);
+
+const ctx =
+canvas.getContext("2d");
+
+let drawing = false;
+
+let history = [];
+
+function resizeCanvas(){
+
+    canvas.width =
+    canvas.offsetWidth;
+
+    canvas.height =
+    canvas.offsetHeight;
+}
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+function getPos(e){
+
+    const rect =
+    canvas.getBoundingClientRect();
+
+    if(e.touches){
+
+        return{
+
+            x:
+            e.touches[0].clientX
+            - rect.left,
+
+            y:
+            e.touches[0].clientY
+            - rect.top
+        };
+    }
+
+    return{
+
+        x:
+        e.clientX - rect.left,
+
+        y:
+        e.clientY - rect.top
+    };
+}
+
+function startDraw(e){
+
+  history.push(
+    canvas.toDataURL()
+  );
+
+  drawing = true;
+
+  draw(e);
+
+}
+
+function endDraw(){
+
+    drawing = false;
+
+    ctx.beginPath();
+}
+
+function draw(e){
+
+    if(!drawing) return;
+
+    const pos =
+    getPos(e);
+
+    ctx.lineWidth =
+    document.getElementById(
+        "brushSize"
+    ).value;
+
+    ctx.lineCap = "round";
+
+    ctx.strokeStyle =
+    selectedColor;
+
+    ctx.lineTo(
+        pos.x,
+        pos.y
+    );
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        pos.x,
+        pos.y
+    );
+}
+
+/* EVENTS */
+
+canvas.addEventListener(
+    "mousedown",
+    startDraw
+);
+
+canvas.addEventListener(
+    "mouseup",
+    endDraw
+);
+
+canvas.addEventListener(
+    "mousemove",
+    draw
+);
+
+canvas.addEventListener(
+    "touchstart",
+    startDraw
+);
+
+canvas.addEventListener(
+    "touchend",
+    endDraw
+);
+
+canvas.addEventListener(
+    "touchmove",
+    draw
+);
+
+/* BUTTONS */
+
+function undoLast(){
+
+    if(history.length == 0)
+    return;
+
+    const img =
+    new Image();
+
+    img.src =
+    history.pop();
+
+    img.onload = ()=>{
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        ctx.drawImage(
+            img,
+            0,
+            0
+        );
+    };
+}
+
+function clearCanvas(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+}
+
+function nextImage(){
+
+    clearCanvas();
+
+    loadRandomImage();
+}
+
+function finishGame(){
+
+    alert(
+        "🌟 Hebat! Gambarmu bagus 😍"
+    );
+}
+
+function goHome(){
+
+    location.reload();
+}
+
+function startGame(){
+
+    document.getElementById(
+        "welcomeModal"
+    ).style.display = "none";
+}
+
+</script>
+<!-- MEDIAPIPE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+<!-- CAMERA -->
+
+<video
+id="inputVideo"
+autoplay
+playsinline
+style="
+display:none;
+position:fixed;
+bottom:20px;
+right:20px;
+width:180px;
+border-radius:20px;
+z-index:999;
+border:4px solid white;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+transform:scaleX(-1);
+"
+></video>
+
+<div id="aiCursor" class="ai-cursor"></div>
+
+<script>
+const colorButtons = [
+
+  {x:60,y:80,color:"red"},
+  {x:130,y:80,color:"blue"},
+  {x:200,y:80,color:"green"},
+  {x:270,y:80,color:"yellow"},
+  {x:340,y:80,color:"purple"},
+  {x:410,y:80,color:"orange"},
+  {x:480,y:80,color:"pink"},
+  {x:550,y:80,color:"black"}
+
+];
+/* =========================
+   AI HAND TRACKING
+========================= */
+
+const videoElement =
+document.getElementById(
+    "inputVideo"
+);
+
+let aiEnabled = false;
+
+const hands =
+new Hands({
+
+    locateFile:(file)=>{
+
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+    }
+});
+
+hands.setOptions({
+
+    maxNumHands:1,
+
+    modelComplexity:0,
+
+    minDetectionConfidence:0.5,
+
+    minTrackingConfidence:0.5
+});
+
+let aiDrawing = false;
+let airClick = false;
+
+let uiMode = false;
+let lastToggle = 0;
+let uiLock = false;
+
+let hoverColor = null;
+let hoverStart = 0;
+
+hands.onResults(results=>{
+
+    if(!aiEnabled) return;
+
+    if(
+        !results.multiHandLandmarks
+        ||
+        results.multiHandLandmarks.length
+        === 0
+    ){
+
+        aiDrawing = false;
+airClick = false;
+        
+
+        ctx.beginPath();
+
+        return;
+    }
+
+    const landmarks =
+    results.multiHandLandmarks[0];
+
+    const finger = landmarks[8];
+const targetX =
+(1-finger.x)*window.innerWidth;
+
+const targetY =
+finger.y*window.innerHeight;
+
+if(!window.smoothX){
+
+    window.smoothX = targetX;
+    window.smoothY = targetY;
+}
+
+window.smoothX +=
+(targetX - window.smoothX) * 0.2;
+
+window.smoothY +=
+(targetY - window.smoothY) * 0.2;
+
+const handX =
+window.smoothX;
+
+const handY =
+window.smoothY;                                                          
+
+
+
+
+// pinch
+const thumb = landmarks[4];
+
+const pinch = Math.hypot(
+  finger.x-thumb.x,
+  finger.y-thumb.y
+);
+
+// hitung jari terbuka
+let openFingers = 0;
+
+const fingerTips = [8,12,16,20];
+
+fingerTips.forEach(tip=>{
+
+  if(landmarks[tip].y < landmarks[tip-2].y){
+    openFingers++;
+  }
+
+});
+
+// ibu jari
+if(landmarks[4].x < landmarks[3].x){
+  openFingers++;
+}
+console.log(
+"Jari:",
+openFingers,
+"UI:",
+uiMode
+);
+
+// 5 jari = stop gambar
+if(openFingers >= 5){
+
+  drawing = false;
+
+}
+/*
+if(
+    openFingers >= 3
+    &&
+    Date.now() - lastToggle > 1000
+){
+
+    uiMode = !uiMode;
+
+    lastToggle = Date.now();
+
+}
+*/
+    const indexTip =
+    landmarks[8];
+
+    const thumbTip =
+    landmarks[4];
+
+    const dx =
+    indexTip.x - thumbTip.x;
+
+    const dy =
+    indexTip.y - thumbTip.y;
+
+    const distance =
+    Math.sqrt(
+        dx*dx + dy*dy
+    );
+
+    const x =
+    canvas.width
+    - (indexTip.x * canvas.width);
+
+    const y =
+    indexTip.y * canvas.height;
+    ctx.beginPath();
+
+    const aiCursor =
+document.getElementById(
+  "aiCursor"
+);
+
+// saat mode UI aktif
+// hentikan gambar
+/*if(uiMode){
+
+    aiDrawing = false;
+
+    drawing = false;
+
+    ctx.beginPath();
+}
+    */ 
+
+// tampilkan cursor saat mode UI
+if(aiEnabled){
+
+    aiCursor.style.display = "block";
+
+    aiCursor.style.left =
+    handX + "px";
+
+    aiCursor.style.top =
+    handY + "px";
+
+}else{
+
+    aiCursor.style.display = "none";
+}
+
+    if(distance < 0.10){
+
+    // cek hover warna
+    document
+    .querySelectorAll(".color-btn")
+    .forEach(btn=>{
+
+        const rect =
+        btn.getBoundingClientRect();
+
+        if(
+            handX > rect.left &&
+            handX < rect.right &&
+            handY > rect.top &&
+            handY < rect.bottom
+        ){
+
+            if(hoverColor !== btn){
+
+                hoverColor = btn;
+                hoverStart = Date.now();
+            }
+
+            if(
+                Date.now() - hoverStart > 1000
+            ){
+
+                btn.click();
+            }
+        }
+    });
+
+    // menggambar
+    if(!aiDrawing){
+
+        aiDrawing = true;
+
+        ctx.beginPath();
+
+        ctx.moveTo(x,y);
+    }
+
+    ctx.lineWidth =
+    document.getElementById(
+        "brushSize"
+    ).value;
+
+    ctx.lineCap = "round";
+
+    ctx.strokeStyle =
+    selectedColor;
+
+    ctx.lineTo(x,y);
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    ctx.moveTo(x,y);
+
+}else{
+
+    aiDrawing = false;
+
+    ctx.beginPath();
+}
+});
+
+const camera =
+new Camera(videoElement,{
+
+    onFrame:async()=>{
+
+        if(aiEnabled){
+
+            await hands.send({
+
+                image:videoElement
+            });
+        }
+    },
+
+    width:640,
+
+    height:480
+});
+
+function toggleAI(){
+
+    aiEnabled = !aiEnabled;
+
+    const btn =
+    document.getElementById(
+        "aiToggle"
+    );
+
+    if(aiEnabled){
+
+        btn.innerHTML =
+        "🤖 AI ON";
+
+        btn.style.background =
+        "#2ecc71";
+
+        videoElement.style.display =
+        "block";
+
+        camera.start();
+
+    }else{
+
+        btn.innerHTML =
+        "🤖 AI OFF";
+
+        btn.style.background =
+        "#222";
+
+        videoElement.style.display =
+        "none";
+
+        camera.stop();
+
+        aiDrawing = false;
+
+        ctx.beginPath();
+    }
+}
+
+</script>
 </body>
 </html>

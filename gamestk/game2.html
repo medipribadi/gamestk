@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🧠 Pintar Yuk! — Game Edukasi Anak TK</title>
+<title>🧠 Pintar Yuk! — Game Edukasi Anak </title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -561,7 +561,7 @@ body {
     <!-- START SCREEN -->
     <div id="start-screen" class="full-overlay">
       <h1>🧠 Pintar Yuk!</h1>
-      <p>Game edukasi 3 fase seru untuk anak TK!</p>
+      <p>Game edukasi 3 fase seru untuk anak</p>
       <div class="phase-card">
         <b>📐 Fase 1 — Berhitung:</b><br>
         Lihat soal tambah/kurang → angkat jari sebanyak jawaban yang benar!
@@ -597,6 +597,19 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 
 <script>
+
+// AUDIO FEEDBACK
+const soundBenar = new Audio('audio/benar.mp3');
+const soundSalah = new Audio('audio/salah.mp3');
+const bgm = new Audio('audio/backsoundgame2.mp3');
+
+
+soundBenar.volume = 1.0;
+soundSalah.volume = 1.0;
+
+bgm.volume = 0.08; // kecil, tidak mengganggu
+bgm.loop = true;
+
 // ═══════════════════════════════════════════════
 //  STARFIELD
 // ═══════════════════════════════════════════════
@@ -964,6 +977,9 @@ function startCountdown(){
 }
 
 function startGame(){
+   try{
+    bgm.play();
+  }catch(e){}
   gameRunning=true;
   mathQ   = shuffle(MATH_QUESTIONS).slice(0,6);
   placesQ = shuffle(PLACES_QUESTIONS).slice(0,5);
@@ -1131,14 +1147,32 @@ function submitSpeechAnswer(text){
 
 // ── FEEDBACK ──
 function showFeedback(correct, msg){
+  
+  if(correct){
+    soundBenar.currentTime = 0;
+    soundBenar.play();
+  }else{
+    soundSalah.currentTime = 0;
+    soundSalah.play();
+  }
+
   const ov=document.getElementById('feedback-overlay');
   const em=document.getElementById('feedback-emoji');
   const ms=document.getElementById('feedback-msg');
   const sub=document.getElementById('feedback-sub');
+
   ov.className='full-overlay '+(correct?'correct':'wrong');
-  em.textContent=correct?['🌟','🎉','🏆','✨','🥳'][Math.floor(Math.random()*5)]:'😅';
-  ms.textContent=correct?'Benar! Keren!':'Hampir Benar!';
+
+  em.textContent=correct
+    ? ['🌟','🎉','🏆','✨','🥳'][Math.floor(Math.random()*5)]
+    : '😅';
+
+  ms.textContent=correct
+    ? 'Benar! Keren!'
+    : 'Hampir Benar!';
+
   sub.textContent=msg;
+
   ov.style.display='flex';
 }
 function hideFeedback(){
@@ -1161,6 +1195,8 @@ function updateProgress(){
 
 // ── END ──
 function endGame(){
+  bgm.pause();
+  bgm.currentTime = 0;
   gameRunning=false;
   const maxScore=totalQ*15;
   const pct=score/maxScore;

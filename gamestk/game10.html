@@ -2,54 +2,33 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Lari Yuk! 🌈</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lari Yuk! 🏃</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  * { margin:0; padding:0; box-sizing:border-box; }
   body {
-    background:#1a0533;
-    font-family:'Nunito',sans-serif;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    min-height:100vh; overflow:hidden;
+    background: #1a0533;
+    font-family: 'Nunito', sans-serif;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; overflow: hidden;
   }
   #title-bar {
-    font-family:'Fredoka One',cursive;
-    font-size:26px; color:#FFD700;
-    text-shadow:2px 3px 0 rgba(0,0,0,0.4);
-    margin-bottom:10px; letter-spacing:1px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px; color: #FFD700;
+    text-shadow: 2px 3px 0 rgba(0,0,0,0.4);
+    margin-bottom: 10px; letter-spacing: 1px;
   }
   #game-wrapper {
-    position:relative;
-    width:800px; height:480px;
+    position: relative; width: 800px; height: 480px;
   }
   #gameCanvas {
-    border-radius:24px;
-    border:4px solid #FFD700;
-    box-shadow:0 0 40px rgba(255,215,0,0.4),0 0 80px rgba(255,100,150,0.2);
-    display:block;
+    border-radius: 24px;
+    border: 4px solid #FFD700;
+    box-shadow: 0 0 40px rgba(255,215,0,0.4), 0 0 80px rgba(255,100,150,0.2);
+    display: block;
   }
-  /* Touch control buttons (HP) */
-  #touch-controls {
-    position:absolute; bottom:10px; left:0; right:0;
-    display:none;
-    justify-content:space-between; align-items:flex-end;
-    padding:0 10px; z-index:25; pointer-events:none;
-  }
-  #touch-controls button {
-    pointer-events:all;
-    width:clamp(55px,15vw,75px); height:clamp(55px,15vw,75px);
-    border-radius:50%; border:3px solid rgba(255,255,255,0.4);
-    background:rgba(255,255,255,0.18); backdrop-filter:blur(4px);
-    font-size:clamp(20px,5vw,28px); cursor:pointer;
-    color:white; font-family:'Fredoka One',cursive;
-    box-shadow:0 4px 12px rgba(0,0,0,0.35);
-    transition:transform .1s,background .1s;
-    -webkit-tap-highlight-color:transparent;
-    user-select:none;
-  }
-  #touch-controls button:active { transform:scale(0.88); background:rgba(255,255,255,0.35); }
   /* HUD */
   #hud {
     position: absolute; top: 0; left: 0; right: 0;
@@ -58,8 +37,8 @@
   }
   .hud-box {
     background: rgba(255,255,255,0.93);
-    border-radius: 14px; padding: 4px 10px;
-    font-family: 'Fredoka One', cursive; font-size: clamp(12px,3.5vw,18px);
+    border-radius: 14px; padding: 5px 14px;
+    font-family: 'Fredoka One', cursive; font-size: 18px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.2); border: 2px solid #FFD700;
   }
   #lives-display { color: #E91E63; font-size: 20px; }
@@ -90,11 +69,10 @@
 
   /* Overlays */
   .overlay {
-    position: absolute; inset: 0; border-radius: clamp(0px,2vw,20px);
+    position: absolute; inset: 0; border-radius: 20px;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    z-index: 30; text-align: center; padding: clamp(12px,3vw,24px);
-    overflow-y: auto;
+    z-index: 30; text-align: center; padding: 24px;
   }
   #start-screen {
     background: linear-gradient(135deg,rgba(255,107,107,.97),rgba(255,183,77,.97),rgba(102,187,106,.97));
@@ -105,40 +83,24 @@
     display:none;
   }
   .overlay h1 {
-    font-family:'Fredoka One',cursive; font-size:clamp(26px,6vw,46px); color:white;
+    font-family:'Fredoka One',cursive; font-size:46px; color:white;
     text-shadow:3px 4px 0 rgba(0,0,0,0.2); margin-bottom:8px;
   }
   .overlay p { font-size:15px; color:rgba(255,255,255,.95); font-weight:800; margin-bottom:6px; line-height:1.5; }
   .instr {
     background:rgba(255,255,255,.2); border-radius:16px;
-    padding:10px 16px; margin:8px 0; font-size:clamp(11px,3vw,14px);
-    color:white; font-weight:800; line-height:1.8;
+    padding:12px 20px; margin:10px 0; font-size:14px;
+    color:white; font-weight:800; line-height:2;
   }
   .btn-play {
-    margin-top:12px; padding:clamp(10px,2.5vw,13px) clamp(24px,6vw,38px); border-radius:50px;
-    font-family:'Fredoka One',cursive; font-size:clamp(16px,4.5vw,22px); color:#333;
+    margin-top:14px; padding:13px 38px; border-radius:50px;
+    font-family:'Fredoka One',cursive; font-size:22px; color:#333;
     background:white; border:none; cursor:pointer;
-    box-shadow:0 5px 0 rgba(0,0,0,.2); transition:transform .1s,box-shadow .1s;
-    -webkit-tap-highlight-color:transparent;
+    box-shadow:0 6px 0 rgba(0,0,0,.2); transition:transform .1s,box-shadow .1s;
   }
   .btn-play:hover { transform:translateY(-3px); box-shadow:0 9px 0 rgba(0,0,0,.2); }
   .btn-play:active { transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.2); }
   #cam-status { font-size:12px; color:rgba(255,255,255,.8); margin-top:6px; font-weight:800; }
-
-  /* AI Toggle */
-  .ai-mode-row {
-    display:flex; align-items:center; justify-content:center; gap:12px; margin:10px 0 4px;
-  }
-  .ai-mode-label { font-family:'Fredoka One',cursive; font-size:15px; color:white; }
-  .toggle-wrap { display:flex; background:rgba(0,0,0,0.3); border-radius:50px; padding:3px; gap:3px; border:2px solid rgba(255,255,255,0.2); }
-  .toggle-btn {
-    padding:clamp(8px,2vw,10px) clamp(14px,4vw,22px); border-radius:50px; border:none; cursor:pointer;
-    font-family:'Fredoka One',cursive; font-size:clamp(13px,3.5vw,16px); transition:all .2s;
-    background:transparent; color:rgba(255,255,255,0.5);
-    -webkit-tap-highlight-color:transparent;
-  }
-  .toggle-btn.active-on  { background:#00CC66; color:white; box-shadow:0 3px 10px rgba(0,204,102,0.4); }
-  .toggle-btn.active-off { background:#FF4757; color:white; box-shadow:0 3px 10px rgba(255,71,87,0.4); }
 
   /* Countdown */
   #countdown-display {
@@ -158,17 +120,10 @@
 </head>
 <body>
 
-<div id="title-bar">🌈 Lari Yuk! 🎮</div>
+<div id="title-bar">🏃 Lari Yuk! 🎮</div>
 
 <div id="game-wrapper">
   <canvas id="gameCanvas" width="800" height="480"></canvas>
-
-  <!-- Touch controls for mobile -->
-  <div id="touch-controls">
-    <button id="touch-left"  ontouchstart="tcLeft(true)"  ontouchend="tcLeft(false)">⬅️</button>
-    <button id="touch-jump"  ontouchstart="tcJump()"      ontouchend="">🙌</button>
-    <button id="touch-right" ontouchstart="tcRight(true)" ontouchend="tcRight(false)">➡️</button>
-  </div>
 
   <div id="hud">
     <div class="hud-box" id="lives-display">❤️❤️❤️</div>
@@ -186,25 +141,16 @@
 
   <!-- START -->
   <div class="overlay" id="start-screen">
-    <h1>🌈 Lari Yuk!</h1>
+    <h1>🏃 Lari Yuk!</h1>
     <p>Lari lurus ke depan, hindari rintangan!</p>
     <div class="instr">
-      ↔️ <b>Condong / A D</b> → Pindah jalur<br>
-      🙌 <b>Angkat tangan / W ↑</b> → Lompat!<br>
+      ↔️ <b>Condong kiri / kanan</b> → Pindah jalur<br>
+      🙌 <b>Angkat kedua tangan</b> → Lompat!<br>
+      ⚡ <b>Kibas tangan cepat</b> → Boost lari!<br>
       ⭐ Ambil bintang &nbsp;|&nbsp; ❤️ 3 nyawa &nbsp;|&nbsp; ⏱️ 40 detik
     </div>
-
-    <!-- AI Mode toggle -->
-    <div class="ai-mode-row">
-      <span class="ai-mode-label">🤖 Mode Kamera:</span>
-      <div class="toggle-wrap">
-        <button class="toggle-btn active-on" id="btn-ai-on"  onclick="setAiMode(true)">📷 AI ON</button>
-        <button class="toggle-btn"           id="btn-ai-off" onclick="setAiMode(false)">🖱️ AI OFF</button>
-      </div>
-    </div>
-
-    <div id="cam-status" style="min-height:18px;">Menghubungkan kamera...</div>
-    <button class="btn-play" id="btn-start" onclick="startCountdown()">🎮 Mulai Main!</button>
+    <div id="cam-status">Menghubungkan kamera...</div>
+    <button class="btn-play" id="btn-start" onclick="startCountdown()" disabled>🎮 Mulai Main!</button>
   </div>
 
   <!-- GAMEOVER -->
@@ -232,41 +178,15 @@
 // ═══════════════════════════════════════════════
 const canvas = document.getElementById('gameCanvas');
 const ctx    = canvas.getContext('2d');
-// Fixed canvas size — simple and reliable
-canvas.width  = 800;
-canvas.height = 480;
-let W = 800, H = 480;
-
-// ── roundRect polyfill for older browsers ──
-if (!CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-    if (typeof r === 'number') r = [r, r, r, r];
-    else if (Array.isArray(r)) {
-      if (r.length === 1) r = [r[0],r[0],r[0],r[0]];
-      else if (r.length === 2) r = [r[0],r[1],r[0],r[1]];
-      else if (r.length === 3) r = [r[0],r[1],r[2],r[1]];
-    } else r = [0,0,0,0];
-    const [tl,tr,br,bl] = r;
-    this.beginPath();
-    this.moveTo(x + tl, y);
-    this.lineTo(x + w - tr, y);
-    this.arcTo(x+w, y,   x+w, y+tr, tr);
-    this.lineTo(x + w, y + h - br);
-    this.arcTo(x+w, y+h, x+w-br, y+h, br);
-    this.lineTo(x + bl, y + h);
-    this.arcTo(x, y+h,   x, y+h-bl, bl);
-    this.lineTo(x, y + tl);
-    this.arcTo(x, y,     x+tl, y, tl);
-    this.closePath();
-    return this;
-  };
-}
+const W = canvas.width, H = canvas.height;
 
 // ── Perspective constants ──
-let HORIZON_Y = H * 0.38;
-let VP_X      = W / 2;
-const ROAD_W_FAR  = 80;
-const ROAD_W_NEAR = 280;
+const HORIZON_Y   = H * 0.38;   // where road vanishes
+const VP_X        = W / 2;      // vanishing point X (centre)
+const ROAD_W_FAR  = 80;         // road half-width at horizon
+const ROAD_W_NEAR = 280;        // road half-width at bottom
+
+// 3 lanes (0=left, 1=centre, 2=right) as fraction of road width
 const LANE_FRAC   = [-0.55, 0, 0.55];
 
 // ═══════════════════════════════════════════════
@@ -276,118 +196,6 @@ const logoImg = new Image();
 logoImg.src = 'logo_asaindo.png';
 
 // ═══════════════════════════════════════════════
-//  AUDIO ENGINE (Web Audio API — no files needed)
-// ═══════════════════════════════════════════════
-const AC = new (window.AudioContext || window.webkitAudioContext)();
-let bgNodes = []; // hold bg music nodes so we can stop them
-
-function unlockAC() { if (AC.state === 'suspended') AC.resume(); }
-document.addEventListener('click', unlockAC, {once:true});
-document.addEventListener('touchstart', unlockAC, {once:true});
-
-// ── Simple tone helper ──
-function playTone(freq, type, dur, vol, delay) {
-  const o = AC.createOscillator();
-  const g = AC.createGain();
-  o.connect(g); g.connect(AC.destination);
-  o.type = type || 'sine';
-  o.frequency.setValueAtTime(freq, AC.currentTime + (delay||0));
-  g.gain.setValueAtTime(0, AC.currentTime + (delay||0));
-  g.gain.linearRampToValueAtTime(vol||0.15, AC.currentTime + (delay||0) + 0.02);
-  g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + (delay||0) + dur);
-  o.start(AC.currentTime + (delay||0));
-  o.stop(AC.currentTime + (delay||0) + dur + 0.02);
-  return {o, g};
-}
-
-// ── Background music: cheerful looping melody ──
-let bgMusicTimer = null;
-const MELODY = [
-  // note freq, duration, volume
-  [523, 0.18, 0.12], // C5
-  [659, 0.18, 0.12], // E5
-  [784, 0.18, 0.12], // G5
-  [880, 0.36, 0.14], // A5
-  [784, 0.18, 0.10], // G5
-  [659, 0.18, 0.10], // E5
-  [523, 0.18, 0.12], // C5
-  [392, 0.36, 0.12], // G4
-  [440, 0.18, 0.12], // A4
-  [523, 0.18, 0.12], // C5
-  [587, 0.18, 0.12], // D5
-  [659, 0.36, 0.14], // E5
-  [587, 0.18, 0.10], // D5
-  [523, 0.18, 0.10], // C5
-  [392, 0.36, 0.12], // G4
-  [349, 0.36, 0.12], // F4
-];
-// Bass line
-const BASS = [
-  [130, 0.36], [164, 0.36], [196, 0.36], [220, 0.36],
-  [196, 0.36], [164, 0.36], [130, 0.36], [146, 0.36],
-];
-
-function playBGMusic() {
-  if (AC.state === 'suspended') return;
-  let t = 0;
-  MELODY.forEach(([freq, dur, vol]) => {
-    playTone(freq, 'triangle', dur * 0.9, vol, t);
-    t += dur;
-  });
-  // Bass
-  let bt = 0;
-  BASS.forEach(([freq, dur]) => {
-    playTone(freq, 'sine', dur * 0.8, 0.08, bt);
-    bt += dur;
-  });
-  // Percussion (kick drum simulation)
-  for (let i = 0; i < 8; i++) {
-    const kick = AC.createOscillator();
-    const kGain = AC.createGain();
-    kick.connect(kGain); kGain.connect(AC.destination);
-    kick.type = 'sine';
-    kick.frequency.setValueAtTime(150, AC.currentTime + i * 0.45);
-    kick.frequency.exponentialRampToValueAtTime(40, AC.currentTime + i * 0.45 + 0.1);
-    kGain.gain.setValueAtTime(0.18, AC.currentTime + i * 0.45);
-    kGain.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + i * 0.45 + 0.18);
-    kick.start(AC.currentTime + i * 0.45);
-    kick.stop(AC.currentTime + i * 0.45 + 0.2);
-  }
-  // Loop — total melody duration ≈ sum of MELODY durations
-  const totalDur = MELODY.reduce((s,[,d])=>s+d, 0);
-  bgMusicTimer = setTimeout(()=>{ if(gameState==='playing') playBGMusic(); }, totalDur * 1000 - 100);
-}
-
-function stopBGMusic() {
-  clearTimeout(bgMusicTimer);
-}
-
-// ── SFX ──
-function sfxJump() {
-  playTone(400, 'sine', 0.06, 0.2, 0);
-  playTone(600, 'sine', 0.08, 0.15, 0.06);
-  playTone(800, 'sine', 0.1, 0.1, 0.12);
-}
-function sfxHit() {
-  playTone(200, 'sawtooth', 0.08, 0.3, 0);
-  playTone(150, 'sawtooth', 0.12, 0.25, 0.08);
-  playTone(100, 'square',   0.15, 0.2, 0.15);
-}
-function sfxCoin() {
-  playTone(880, 'sine', 0.06, 0.18, 0);
-  playTone(1100,'sine', 0.08, 0.14, 0.06);
-}
-function sfxBoost() {
-  [300,400,500,600,700].forEach((f,i) => playTone(f,'square',0.08,0.12,i*0.04));
-}
-function sfxWin() {
-  [523,659,784,1047,1319].forEach((f,i) => playTone(f,'triangle',0.2,0.2,i*0.12));
-}
-function sfxLose() {
-  [400,300,200,150,100].forEach((f,i) => playTone(f,'sawtooth',0.15,0.25,i*0.1));
-}
-
-// ═══════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════
 let gameState = 'start';
@@ -395,53 +203,24 @@ let lives = 3, score = 0, timeLeft = 40;
 let timerInt = null, rafId = null;
 
 // Player
-let playerLane = 1;
-let playerLaneF = 1;
+let playerLane = 1;            // current lane index
+let playerLaneF = 1;           // float for smooth sliding
 let isJumping = false;
-let jumpT = 0;
-const JUMP_DUR = 35;
+let jumpT = 0;                 // 0→1 arc progress
+const JUMP_DUR = 35;           // frames for full jump arc
 let invincible = false, invTimer = 0;
 let boostActive = false, boostTimer = 0;
 
-// Obstacles & coins
+// Obstacles & coins  — stored as {z, lane, type}
+// z = 0 (far/horizon) → 1 (near/player)
 let obstacles = [];
 let coins     = [];
 let particles = [];
 let spawnTimer = 0;
-const SPAWN_INTERVAL = 150;
+const SPAWN_INTERVAL = 80; // frames
 
-// ── Shooter (player position — always centre lane at bottom) ──
-const shooter = {
-  x: W / 2,
-  y: H - 70
-};
-
-// ── AI Mode ──
-let aiModeOn = true;
-
-// ── Touch control handlers (safe to define here — gameState now declared) ──
-function tcLeft(down) {
-  if (!down || gameState !== 'playing' || laneChangeCooldown > 0) return;
-  if (playerLane > 0) { playerLane--; laneChangeCooldown = 15; }
-}
-function tcRight(down) {
-  if (!down || gameState !== 'playing' || laneChangeCooldown > 0) return;
-  if (playerLane < 2) { playerLane++; laneChangeCooldown = 15; }
-}
-function tcJump() {
-  if (gameState === 'playing' && !isJumping) triggerJump();
-}
-
-// ── Show touch buttons on touch devices ──
-if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-  const tc = document.getElementById('touch-controls');
-  if (tc) tc.style.display = 'flex';
-}
-
-// Background speed — cepat agar terasa lari
-// Tapi rintangan punya speed sendiri yg lebih lambat agar ada waktu reaksi
-let baseSpeed = 0.013;       // kecepatan latar (animasi lari terasa cepat)
-let obstacleSpeed = 0.0035;   // rintangan bergerak lebih lambat — ada waktu hindari
+// Speed: how fast z advances per frame
+let baseSpeed = 0.012;
 
 // ═══════════════════════════════════════════════
 //  PERSPECTIVE HELPERS
@@ -481,39 +260,57 @@ poseDetector.onResults(onPose);
 const videoEl = document.getElementById('camVideo');
 let mpCam = null;
 
-// AI mode & camera — defined after gameState below
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoEl.srcObject = stream;
+    document.getElementById('cam-status').textContent = '✅ Kamera siap!';
+    document.getElementById('btn-start').disabled = false;
+
+    mpCam = new Camera(videoEl, {
+      onFrame: async () => {
+        if (gameState === 'playing') await poseDetector.send({ image: videoEl });
+      },
+      width: 320, height: 240
+    });
+    mpCam.start();
+  } catch(e) {
+    document.getElementById('cam-status').textContent = '❌ Kamera tidak ada — pakai A/D + W di keyboard';
+    document.getElementById('cam-status').style.color = '#aa2244';
+    document.getElementById('btn-start').disabled = false;
+  }
+}
 
 function onPose(results) {
-  if (!results.poseLandmarks || gameState !== 'playing' || !aiModeOn) return;
+  if (!results.poseLandmarks || gameState !== 'playing') return;
   const lm = results.poseLandmarks;
 
   const lSh = lm[11], rSh = lm[12];
   const lWr = lm[15], rWr = lm[16];
 
   // Tilt: difference in shoulder Y (mirrored cam)
-  // Use faster smoothing (0.3/0.7) so response is more immediate
   const rawTilt = lSh.y - rSh.y;
-  poseSmooth.tilt = poseSmooth.tilt * 0.3 + rawTilt * 0.7;
+  poseSmooth.tilt = poseSmooth.tilt * 0.6 + rawTilt * 0.4;
 
-  // Jump: both wrists clearly above shoulders (lowered threshold for kids)
-  const wristsUp = lWr.y < lSh.y - 0.05 && rWr.y < rSh.y - 0.05;
+  // Jump: both wrists above shoulders
+  const wristsUp = lWr.y < lSh.y - 0.08 && rWr.y < rSh.y - 0.08;
 
   // Boost: fast wrist movement
   const avgWY = (lWr.y + rWr.y) / 2;
   wristHistory.push(avgWY);
-  if (wristHistory.length > 6) wristHistory.shift();
+  if (wristHistory.length > 8) wristHistory.shift();
   let wristMove = 0;
   for (let i = 1; i < wristHistory.length; i++)
     wristMove += Math.abs(wristHistory[i] - wristHistory[i-1]);
 
-  // Apply — lower tilt threshold (0.04) + shorter cooldown (15 frames) for responsiveness
-  const TILT = 0.04;
+  // Apply
+  const TILT = 0.07;
   if (laneChangeCooldown <= 0) {
     if (poseSmooth.tilt > TILT && playerLane > 0) {
-      playerLane--; laneChangeCooldown = 15;
+      playerLane--; laneChangeCooldown = 25;
       setPoseBadge('⬅️ Kiri!');
     } else if (poseSmooth.tilt < -TILT && playerLane < 2) {
-      playerLane++; laneChangeCooldown = 15;
+      playerLane++; laneChangeCooldown = 25;
       setPoseBadge('➡️ Kanan!');
     } else {
       setPoseBadge('🧍 Netral');
@@ -521,7 +318,7 @@ function onPose(results) {
   }
 
   if (wristsUp && !isJumping) { triggerJump(); setPoseBadge('🙌 Lompat!'); }
-  if (wristMove > 0.15 && !boostActive) { triggerBoost(); setPoseBadge('⚡ BOOST!'); }
+  if (wristMove > 0.18 && !boostActive) { triggerBoost(); setPoseBadge('⚡ BOOST!'); }
 }
 
 function setPoseBadge(txt) {
@@ -548,26 +345,22 @@ document.addEventListener('keydown', e => {
 // ═══════════════════════════════════════════════
 function triggerJump() {
   isJumping = true; jumpT = 0;
-  sfxJump();
 }
 function triggerBoost() {
   if (boostActive) return;
   boostActive = true; boostTimer = 100;
   spawnParticles(VP_X, H - 60, '#FFD700', 14);
-  sfxBoost();
 }
 function loseLife() {
   if (invincible) return;
   lives--; invincible = true; invTimer = 80;
   spawnParticles(VP_X + LANE_FRAC[playerLane] * ROAD_W_NEAR * 0.8, H - 80, '#FF4444', 12);
-  sfxHit();
   updateHUD();
   if (lives <= 0) endGame('gameover');
 }
 function collectStar(c) {
   score++;
   spawnParticles(laneX(c.lane, c.z), zToY(c.z) - 20, '#FFD700', 8);
-  sfxCoin();
   updateHUD();
 }
 function spawnParticles(x, y, color, n) {
@@ -592,19 +385,15 @@ function updateHUD() {
 function endGame(type) {
   gameState = type;
   clearInterval(timerInt);
-  stopBGMusic();
   if (type === 'gameover') {
-    sfxLose();
     document.getElementById('gameover-screen').style.display = 'flex';
     document.getElementById('gameover-screen').querySelector('#final-score').textContent = `⭐ ${score} Bintang`;
   } else {
-    sfxWin();
     document.getElementById('win-screen').style.display = 'flex';
     document.getElementById('win-screen').querySelector('#final-score-win').textContent = `⭐ ${score} Bintang`;
   }
 }
 function resetGame() {
-  stopBGMusic();
   lives=3; score=0; timeLeft=40;
   obstacles=[]; coins=[]; particles=[];
   playerLane=1; playerLaneF=1;
@@ -614,9 +403,6 @@ function resetGame() {
   poseSmooth.tilt=0;
   document.getElementById('gameover-screen').style.display='none';
   document.getElementById('win-screen').style.display='none';
-  // Restore camera visibility based on current AI mode
-  document.getElementById('cam-container').style.display = aiModeOn ? 'block' : 'none';
-  document.getElementById('pose-badge').style.display    = aiModeOn ? 'block' : 'none';
   updateHUD();
   startCountdown();
 }
@@ -625,13 +411,6 @@ function resetGame() {
 //  COUNTDOWN
 // ═══════════════════════════════════════════════
 function startCountdown() {
-  // If AI OFF, hide camera elements
-  if (!aiModeOn) {
-    const cc = document.getElementById('cam-container');
-    const pb = document.getElementById('pose-badge');
-    if (cc) cc.style.display = 'none';
-    if (pb) pb.style.display = 'none';
-  }
   document.getElementById('start-screen').style.display = 'none';
   const cdDiv = document.getElementById('countdown-display');
   const cdNum = document.getElementById('countdown-number');
@@ -652,9 +431,6 @@ function startCountdown() {
 }
 function startPlaying() {
   gameState = 'playing'; updateHUD();
-  unlockAC();
-  // Short delay to let AudioContext resume before playing music
-  setTimeout(() => playBGMusic(), 300);
   timerInt = setInterval(() => {
     if (gameState !== 'playing') return;
     timeLeft--;
@@ -671,13 +447,13 @@ function spawnObstacle() {
   // Avoid spawning in all 3 lanes at once
   const lane = Math.floor(Math.random()*3);
   // types: 'wall' (dodge), 'low' (jump), 'pit' (dodge away — visual hole)
-  const types = ['wall','low','low','pit']; // more jumps, fewer walls = fairer for kids
+  const types = ['wall','wall','low','pit'];
   const type = types[Math.floor(Math.random()*types.length)];
-  obstacles.push({ z: 0.01, lane, type }); // mulai dari sangat jauh — terlihat lebih awal
+  obstacles.push({ z: 0.02, lane, type });
 }
 function spawnCoin() {
   const lane = Math.floor(Math.random()*3);
-  coins.push({ z: 0.01, lane, collected: false });
+  coins.push({ z: 0.02, lane, collected: false });
 }
 
 // ═══════════════════════════════════════════════
@@ -1607,24 +1383,16 @@ function loop() {
   if (gameState !== 'playing') return;
   rafId = requestAnimationFrame(loop);
 
-  // Recalc perspective constants each frame (handles resize)
-  HORIZON_Y = H * 0.38;
-  VP_X      = W / 2;
-  shooter.x = VP_X;
-  shooter.y = H - 70;
-
-  const speed = boostActive ? baseSpeed * 1.5 : baseSpeed;
+  const speed = boostActive ? baseSpeed * 2.0 : baseSpeed;
 
   // Update cooldowns
   if (laneChangeCooldown > 0) laneChangeCooldown--;
   if (invincible) { invTimer--; if(invTimer<=0) invincible=false; }
   if (boostActive) { boostTimer--; if(boostTimer<=0){boostActive=false;} }
 
-  // Update z — background uses baseSpeed (fast=feels like running)
-  // Obstacles use obstacleSpeed (slower = more warning time for kids)
-  const obsSpeed = boostActive ? obstacleSpeed * 1.5 : obstacleSpeed;
-  obstacles.forEach(o => o.z += obsSpeed);
-  coins.forEach(c => c.z += obsSpeed * 1.1); // coins slightly faster so reachable
+  // Update obstacles & coins z
+  obstacles.forEach(o => o.z += speed);
+  coins.forEach(c => c.z += speed);
 
   // Spawn
   spawnTimer++;
@@ -1671,91 +1439,23 @@ function loop() {
 }
 
 // ═══════════════════════════════════════════════
-//  CAMERA & AI MODE  (defined after gameState)
-// ═══════════════════════════════════════════════
-let cameraStarted = false;
-
-function setAiMode(on) {
-  aiModeOn = on;
-  const btnOn  = document.getElementById('btn-ai-on');
-  const btnOff = document.getElementById('btn-ai-off');
-  if (btnOn)  btnOn.className  = 'toggle-btn' + (on ? ' active-on' : '');
-  if (btnOff) btnOff.className = 'toggle-btn' + (!on ? ' active-off' : '');
-  const camCont   = document.getElementById('cam-container');
-  const poseBadge = document.getElementById('pose-badge');
-  const statusEl  = document.getElementById('cam-status');
-  if (on) {
-    statusEl.textContent = 'Menghubungkan kamera...';
-    statusEl.style.color = '';
-    if (camCont)   camCont.style.display   = 'block';
-    if (poseBadge) poseBadge.style.display = 'block';
-    startCameraIfNeeded();
-  } else {
-    statusEl.textContent = '🖱️ Mode keyboard aktif — kamera tidak diperlukan';
-    statusEl.style.color = '#FFD700';
-    if (camCont)   camCont.style.display   = 'none';
-    if (poseBadge) poseBadge.style.display = 'none';
-    stopCamera();
-  }
-}
-
-function stopCamera() {
-  if (videoEl && videoEl.srcObject) {
-    videoEl.srcObject.getTracks().forEach(t => t.stop());
-    videoEl.srcObject = null;
-  }
-  if (mpCam) { try { mpCam.stop(); } catch(e){} mpCam = null; }
-  cameraStarted = false;
-}
-
-async function startCameraIfNeeded() {
-  if (cameraStarted) return;
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    videoEl.srcObject = stream;
-    cameraStarted = true;
-    document.getElementById('cam-status').textContent = '✅ Kamera siap! Gerakkan badan untuk kontrol.';
-    mpCam = new Camera(videoEl, {
-      onFrame: async () => {
-        if (gameState === 'playing' && aiModeOn) await poseDetector.send({ image: videoEl });
-      },
-      width: 320, height: 240
-    });
-    mpCam.start();
-  } catch(e) {
-    const statusEl = document.getElementById('cam-status');
-    statusEl.textContent = '❌ Kamera tidak bisa diakses — pakai keyboard';
-    statusEl.style.color = '#FFB74D';
-    setAiMode(false); // auto switch off
-  }
-}
-
-function initCamera() {
-  startCameraIfNeeded(); // non-blocking — game never freezes
-}
-
-// ═══════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════
 updateHUD();
 
-function drawStaticPreview(){
-  HORIZON_Y = H * 0.38;
-  VP_X = W / 2;
-  const sky = ctx.createLinearGradient(0,0,0,HORIZON_Y);
+// Draw static preview
+(function staticPreview(){
+  const sky=ctx.createLinearGradient(0,0,0,HORIZON_Y);
   sky.addColorStop(0,'#5BC8FF'); sky.addColorStop(1,'#C9EDFF');
-  ctx.fillStyle = sky; ctx.fillRect(0,0,W,HORIZON_Y);
-  const gr = ctx.createLinearGradient(0,HORIZON_Y,0,H);
-  gr.addColorStop(0,'#66BB6A'); gr.addColorStop(1,'#388E3C');
-  ctx.fillStyle = gr; ctx.fillRect(0,HORIZON_Y,W,H-HORIZON_Y);
-  ctx.fillStyle = '#8B7355';
+  ctx.fillStyle=sky; ctx.fillRect(0,0,W,HORIZON_Y);
+  ctx.fillStyle='#5A9E3A'; ctx.fillRect(0,HORIZON_Y,W,H-HORIZON_Y);
+  ctx.fillStyle='#8B7355';
   ctx.beginPath();
   ctx.moveTo(VP_X-ROAD_W_FAR,HORIZON_Y); ctx.lineTo(VP_X+ROAD_W_FAR,HORIZON_Y);
   ctx.lineTo(VP_X+ROAD_W_NEAR,H); ctx.lineTo(VP_X-ROAD_W_NEAR,H);
   ctx.closePath(); ctx.fill();
-}
+})();
 
-drawStaticPreview();
 initCamera();
 </script>
 </body>

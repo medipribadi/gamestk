@@ -137,9 +137,14 @@ body{
 }
 
 .huruf{
+    font-family:
+    "Amiri",
+    "Scheherazade New",
+    serif;
 
-  font-size:150px;
-
+    font-size:120px;
+    line-height:1.4;
+    
   color:#0d7c3b;
 
   text-shadow:
@@ -366,6 +371,88 @@ button:hover{
 </head>
 
 <body>
+  <div id="welcomeModal" style="
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+">
+
+<div style="
+background:white;
+width:90%;
+max-width:700px;
+border-radius:30px;
+padding:30px;
+text-align:center;
+">
+
+<h1 style="color:#0d7c3b;">
+📖 Ayo Belajar Mengaji
+</h1>
+
+<p style="margin:15px 0;">
+Assalamu'alaikum 😊
+</p>
+
+<div style="
+text-align:left;
+background:#f5fff5;
+padding:20px;
+border-radius:20px;
+margin:20px 0;
+">
+
+<h3>🌟 Cara Bermain</h3>
+
+<p>🔊 Klik <b>Dengarkan</b> untuk mengetahui cara baca huruf.</p>
+
+<p>🎤 Klik <b>Sebutkan</b> lalu bacakan dengan suara jelas.</p>
+
+<p>⭐ Jawaban benar mendapatkan <b>10 poin</b>.</p>
+
+<p>➡ Klik <b>Berikutnya</b> untuk melewati soal.</p>
+
+<p>📉 Poin berkurang <b>1</b>.</p>
+
+<p>📚 Level 1 : Mengenal huruf hijaiyah.</p>
+
+<p>📚 Level 2 : Membaca huruf hijaiyah dengan harakat.</p>
+
+<p>🎲 Soal level 2 akan muncul secara acak.</p>
+
+</div>
+
+<input
+id="playerNameInput"
+placeholder="Tulis namamu 😊"
+style="
+width:100%;
+padding:15px;
+font-size:18px;
+border-radius:15px;
+border:2px solid #ddd;
+">
+
+<button
+onclick="startGame()"
+style="
+margin-top:20px;
+background:#4caf50;
+color:white;
+padding:15px 30px;
+">
+
+🚀 Mulai Belajar
+
+</button>
+
+</div>
+
+</div>
 
 <div class="container">
 
@@ -497,57 +584,201 @@ const levels = [
 /* LEVEL 2 */
 
 [
-{ arab:"بَ", latin:"Ba" },
-{ arab:"بِ", latin:"Bi" },
-{ arab:"بُ", latin:"Bu" },
+{
+ arab:["اَ","اِ","اُ"],
+ latin:["A","I","U"],
+ sound:"Alif.ogg",
+ answer:"a i u"
+},
 
-{ arab:"تَ", latin:"Ta" },
-{ arab:"تِ", latin:"Ti" },
-{ arab:"تُ", latin:"Tu" },
+{
+ arab:["بَ","بِ","بُ"],
+ latin:["BA","BI","BU"],
+ sound:"Ba.ogg",
+ answer:"ba bi bu"
+},
 
-{ arab:"جَ", latin:"Ja" },
-{ arab:"جِ", latin:"Ji" },
-{ arab:"جُ", latin:"Ju" },
+{
+ arab:["تَ","تِ","تُ"],
+ latin:["TA","TI","TU"],
+ sound:"Ta.ogg",
+ answer:"ta ti tu"
+},
 
-{ arab:"دَ", latin:"Da" },
-{ arab:"دِ", latin:"Di" },
-{ arab:"دُ", latin:"Du" },
+{
+ arab:["ثَ","ثِ","ثُ"],
+ latin:["TSA","TSI","TSU"],
+ sound:"Tsa.ogg",
+ answer:"tsa tsi tsu"
+},
 
-{ arab:"رَ", latin:"Ra" },
-{ arab:"رِ", latin:"Ri" },
-{ arab:"رُ", latin:"Ru" },
+{
+ arab:["جَ","جِ","جُ"],
+ latin:["JA","JI","JU"],
+ sound:"Jim.ogg",
+ answer:"ja ji ju"
+},
 
-{ arab:"سَ", latin:"So" },
-{ arab:"سِ", latin:"Si" },
-{ arab:"سُ", latin:"Su" },
+{
+ arab:["حَ","حِ","حُ"],
+ latin:["HA","HI","HU"],
+ sound:"Ha.ogg",
+ answer:"ha hi hu"
+},
 
-{ arab:"لَ", latin:"La" },
-{ arab:"لِ", latin:"Li" },
-{ arab:"لُ", latin:"Lu" },
+{
+ arab:["خَ","خِ","خُ"],
+ latin:["KHO","KHI","KHU"],
+ sound:"Kho.ogg",
+ answer:"kho khi khu"
+},
 
-{ arab:"مَ", latin:"Ma" },
-{ arab:"مِ", latin:"Mi" },
-{ arab:"مُ", latin:"Mu" },
+{
+ arab:["دَ","دِ","دُ"],
+ latin:["DA","DI","DU"],
+ sound:"Dal.ogg",
+ answer:"da di du"
+},
 
-{ arab:"نَ", latin:"Na" },
-{ arab:"نِ", latin:"Ni" },
-{ arab:"نُ", latin:"Nu" },
-/* WAW */
-{ arab:"وَ", latin:"Wa" },
-{ arab:"وِ", latin:"Wi" },
-{ arab:"وُ", latin:"Wu" },
+{
+ arab:["ذَ","ذِ","ذُ"],
+ latin:["DZA","DZI","DZU"],
+ sound:"Dzal.ogg",
+ answer:"dza dzi dzu"
+},
 
-/* HA */
-{ arab:"هَ", latin:"Ha" },
-{ arab:"هِ", latin:"Hi" },
-{ arab:"هُ", latin:"Hu" },
+{
+ arab:["رَ","رِ","رُ"],
+ latin:["RA","RI","RU"],
+ sound:"Ro.ogg",
+ answer:"ra ri ru"
+},
 
-/* YA */
-{ arab:"يَ", latin:"Ya" },
-{ arab:"يِ", latin:"Yi" },
-{ arab:"يُ", latin:"Yu" }
+{
+ arab:["زَ","زِ","زُ"],
+ latin:["ZA","ZI","ZU"],
+ sound:"Za.ogg",
+ answer:"za zi zu"
+},
 
+{
+ arab:["سَ","سِ","سُ"],
+ latin:["SA","SI","SU"],
+ sound:"Sin.ogg",
+ answer:"sa si su"
+},
 
+{
+ arab:["شَ","شِ","شُ"],
+ latin:["SYA","SYI","SYU"],
+ sound:"Syin.ogg",
+ answer:"sya syi syu"
+},
+
+{
+ arab:["صَ","صِ","صُ"],
+ latin:["SHO","SHI","SHU"],
+ sound:"Shod.ogg",
+ answer:"sho shi shu"
+},
+
+{
+ arab:["ضَ","ضِ","ضُ"],
+ latin:["DHO","DHI","DHU"],
+ sound:"Dhod.ogg",
+ answer:"dho dhi dhu"
+},
+
+{
+ arab:["طَ","طِ","طُ"],
+ latin:["THO","THI","THU"],
+ sound:"Tho.ogg",
+ answer:"tho thi thu"
+},
+
+{
+ arab:["ظَ","ظِ","ظُ"],
+ latin:["ZHO","ZHI","ZHU"],
+ sound:"Zho.ogg",
+ answer:"zho zhi zhu"
+},
+
+{
+ arab:["عَ","عِ","عُ"],
+ latin:["A","I","U"],
+ sound:"Ain.ogg",
+ answer:"a i u"
+},
+
+{
+ arab:["غَ","غِ","غُ"],
+ latin:["GHO","GHI","GHU"],
+ sound:"Ghain.ogg",
+ answer:"gho ghi ghu"
+},
+
+{
+ arab:["فَ","فِ","فُ"],
+ latin:["FA","FI","FU"],
+ sound:"Fa.ogg",
+ answer:"fa fi fu"
+},
+
+{
+ arab:["قَ","قِ","قُ"],
+ latin:["QO","QI","QU"],
+ sound:"Qof.ogg",
+ answer:"qo qi qu"
+},
+
+{
+ arab:["كَ","كِ","كُ"],
+ latin:["KA","KI","KU"],
+ sound:"Kaf.ogg",
+ answer:"ka ki ku"
+},
+
+{
+ arab:["لَ","لِ","لُ"],
+ latin:["LA","LI","LU"],
+ sound:"Lam.ogg",
+ answer:"la li lu"
+},
+
+{
+ arab:["مَ","مِ","مُ"],
+ latin:["MA","MI","MU"],
+ sound:"Mim.ogg",
+ answer:"ma mi mu"
+},
+
+{
+ arab:["نَ","نِ","نُ"],
+ latin:["NA","NI","NU"],
+ sound:"Nun.ogg",
+ answer:"na ni nu"
+},
+
+{
+ arab:["وَ","وِ","وُ"],
+ latin:["WA","WI","WU"],
+ sound:"Wawu.ogg",
+ answer:"wa wi wu"
+},
+
+{
+ arab:["هَ","هِ","هُ"],
+ latin:["HA","HI","HU"],
+ sound:"Hamzah.ogg",
+ answer:"ha hi hu"
+},
+
+{
+ arab:["يَ","يِ","يُ"],
+ latin:["YA","YI","YU"],
+ sound:"Ya.ogg",
+ answer:"ya yi yu"
+}
 ]
 
 ];
@@ -615,17 +846,34 @@ function loadHuruf(){
       questions[current];
   }
 
-  huruf.innerText =
+  if(currentLevel == 0){
+
+    huruf.innerHTML =
     item.arab;
 
-  latin.innerText =
+    latin.innerHTML =
     item.latin;
+
+  }else{
+
+    huruf.innerHTML =
+    item.arab.join(
+      "&nbsp;&nbsp;&nbsp;"
+    );
+
+    latin.innerHTML =
+    item.latin.join(
+      "&nbsp;&nbsp;&nbsp;"
+    );
+  }
 
   statusText.innerHTML =
     `🎯 Bacanya:
-    <b>${item.latin}</b>`;
+    <b>${Array.isArray(item.latin)
+      ? item.latin.join(" ")
+      : item.latin}
+    </b>`;
 }
-askPlayerName();
 loadHuruf();
 showLeaderboard();
 /* NEXT */
@@ -724,41 +972,39 @@ margin:10px;
 
 function playSound(){
 
-  let text;
+    let file;
 
-  if(currentLevel == 0){
+    if(currentLevel === 0){
 
-    text =
-      levels[0][current].latin;
+        file =
+        levels[0][current].latin +
+        ".ogg";
 
-  }else{
+        const audio =
+        new Audio(
+        "level 1/" + file
+        );
 
-    text =
-      questions[current].latin;
-  }
+        audio.play();
 
-  const speech =
-  new SpeechSynthesisUtterance(
-    text
-  );
+    }else{
 
-  speech.lang =
-    "id-ID";
+        const audio =
+        new Audio(
+        "level 2/" +
+        questions[current].sound
+        );
 
-  speech.pitch = 0.9;
-
-  speech.rate = 0.7;
-
-  speech.volume = 1;
-
-  speechSynthesis.speak(
-    speech
-  );
+        audio.play();
+    }
 }
 
 /* VOICE */
+let answered = false;
 
 function startRecognition(){
+
+  answered = false;
 
   if(
     !(
@@ -768,7 +1014,7 @@ function startRecognition(){
   ){
 
     alert(
-      "Browser tidak support 😭"
+      "Browser tidak mendukung Voice Recognition"
     );
 
     return;
@@ -780,39 +1026,252 @@ function startRecognition(){
   recognition.lang =
     "id-ID";
 
+  recognition.continuous = false;
+
+  recognition.interimResults = false;
+
+  recognition.maxAlternatives = 5;
+
+  statusText.innerHTML = `
+🎤 Aku sedang mendengarkan...
+
+<br><br>
+
+Silakan sebutkan dengan
+suara yang jelas 😊
+`;
+
+  const timeout =
+  setTimeout(()=>{
+
+    statusText.innerHTML = `
+😅 Aku belum mendengar suaramu.
+
+<br><br>
+
+Coba tekan tombol
+Sebutkan lagi ya 😊
+`;
+
+    recognition.stop();
+
+  },5000);
+
   recognition.start();
 
-  statusText.innerHTML =
-    "🎤 Mendengarkan...";
+  recognition.onresult = function(event){
+      clearTimeout(timeout);
 
-  recognition.onresult =
-  function(event){
 
-    const result =
-      event.results[0][0]
-      .transcript
-      .toLowerCase();
+    if(answered) return;
+
+    answered = true;
+
+    clearTimeout(timeout);
+
+    let result =
+    event.results[0][0]
+    .transcript
+    .toLowerCase()
+    .trim();
+
+    console.log(
+      "Yang didengar:",
+      result
+    );
 
     let jawaban;
 
-    if(currentLevel == 0){
+if(currentLevel == 0){
 
-      jawaban =
-      levels[0][current]
-      .latin
-      .toLowerCase();
+    jawaban =
+    levels[0][current]
+    .latin
+    .toLowerCase();
 
-    }else{
+}else{
 
-      jawaban =
-      questions[current]
-      .latin
-      .toLowerCase();
-    }
+    jawaban =
+    questions[current]
+    .latin
+    .join(" ")
+    .toLowerCase();
+}
 
-    if(
-      result.includes(jawaban)
-    ){
+const alias = {
+
+  alif:[
+    "alif",
+    "alep"
+  ],
+
+  ba:[
+    "ba",
+    "baba"
+  ],
+
+  ta:[
+    "ta",
+    "tata"
+  ],
+
+  tsa:[
+    "tsa",
+    "sa"
+  ],
+
+  jim:[
+    "jim",
+    "jeem",
+    "jim jim"
+  ],
+
+  ha:[
+    "ha"
+  ],
+
+  kho:[
+    "kho",
+    "ko",
+    "ho"
+  ],
+
+  dal:[
+    "dal"
+  ],
+
+  dzal:[
+    "dzal",
+    "zal",
+    "rizal"
+  ],
+
+  ro:[
+    "ro",
+    "roh"
+  ],
+
+  za:[
+    "za"
+  ],
+
+  sin:[
+    "sin"
+  ],
+
+  syin:[
+    "syin",
+    "shin"
+  ],
+
+  shod:[
+    "shod",
+    "sod"
+  ],
+
+  dhod:[
+    "dhod",
+    "dod"
+  ],
+
+  tho:[
+    "tho",
+    "to"
+  ],
+
+  zho:[
+    "zho",
+    "zo"
+  ],
+
+  ain:[
+    "ain",
+    "main"
+  ],
+
+  ghain:[
+    "ghain",
+    "ghoin",
+    "gain"
+  ],
+
+  fa:[
+    "fa"
+  ],
+
+  qof:[
+    "qof",
+    "kof"
+  ],
+
+  kaf:[
+    "kaf",
+    "kap"
+  ],
+
+  lam:[
+    "lam"
+  ],
+
+  mim:[
+    "mim"
+  ],
+
+  nun:[
+    "nun"
+  ],
+
+  wawu:[
+    "wawu",
+    "wau"
+  ],
+
+  hamzah:[
+    "hamzah",
+    "hamja"
+  ],
+
+  ya:[
+    "ya"
+  ]
+};
+
+    let benar = false;
+
+if(currentLevel == 0){
+
+  const opsi =
+  alias[jawaban] ||
+  [jawaban];
+
+  benar =
+  opsi.some(kata =>
+    result.includes(kata)
+  );
+
+  if(!benar){
+
+    benar =
+    result.includes(
+      jawaban.substring(0,2)
+    );
+  }
+
+}else{
+
+  benar =
+  result.includes(jawaban)
+  ||
+  jawaban.includes(result);
+}
+
+    if(benar){
+
+      recognition.stop();
+
+      new Audio(
+        "audio/benar.mp3"
+      ).play();
 
       score += 10;
 
@@ -861,11 +1320,12 @@ function startRecognition(){
               "🎉 Level 1 selesai!";
 
           }else{
-saveScore();
-            statusText.innerHTML =
-              
-`
-🏆 Semua level selesai!<br><br>
+
+            saveScore();
+
+            statusText.innerHTML = `
+🏆 Semua level selesai!
+<br><br>
 
 <button onclick="restartGame()"
 style="
@@ -879,9 +1339,7 @@ font-weight:bold;
 cursor:pointer;
 margin:10px;
 ">
-
 🔄 Main Lagi
-
 </button>
 
 <button onclick="backHome()"
@@ -896,9 +1354,7 @@ font-weight:bold;
 cursor:pointer;
 margin:10px;
 ">
-
 🏠 Kembali Home
-
 </button>
 `;
           }
@@ -912,9 +1368,34 @@ margin:10px;
 
     }else{
 
-      statusText.innerHTML =
-        "❌ Salah 😊";
+      new Audio(
+        "audio/salah.mp3"
+      ).play();
+
+      statusText.innerHTML = `
+🤔 Belum tepat.
+
+<br><br>
+
+🔊 Dengarkan dulu
+cara bacanya,
+
+lalu coba lagi ya 😊
+`;
     }
+  };
+
+  recognition.onerror = function(){
+
+    clearTimeout(timeout);
+
+    statusText.innerHTML = `
+😅 Aku belum mendengar suaramu.
+
+<br><br>
+
+Coba lagi ya 😊
+`;
   };
 }
 
@@ -1032,21 +1513,26 @@ function backHome(){
     "index.html";
 }
 
-function askPlayerName(){
+function startGame(){
 
   playerName =
-    prompt(
-      "😊 Siapa nama kamu?"
-    );
+  document
+  .getElementById(
+    "playerNameInput"
+  )
+  .value
+  .trim();
 
-  if(
-    !playerName ||
-    playerName.trim() == ""
-  ){
+  if(playerName===""){
 
-    playerName =
-      "Player";
+    playerName="Player";
   }
+
+  document
+  .getElementById(
+    "welcomeModal"
+  )
+  .style.display="none";
 }
 
 function saveScore(){
